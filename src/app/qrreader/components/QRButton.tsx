@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import { NavigationProp, RouteProp } from '@react-navigation/native';
-import SvgUri from 'react-native-svg-uri';
+import QRSvgComponent from './svg_components/qr';
 
 import { colors } from '../resources/constants/colors.json';
 
@@ -10,7 +10,8 @@ const QRButton = ({ navigation, fill }: any) => {
         return (
             <View style={styles.button_view}>
                 <TouchableOpacity onPress={() => navigation.navigate('Scanner')} style={styles.button_main}>
-                    <Text style={styles.button_text}>Scan QR code</Text>
+                    {/* <Text style={styles.button_text}>Scan QR code</Text> */}
+                    <QRSvgComponent />
                 </TouchableOpacity>
             </View>
         );
@@ -18,12 +19,8 @@ const QRButton = ({ navigation, fill }: any) => {
         return (
             <View style={styles.button_view_fill}>
                 <TouchableOpacity onPress={() => navigation.navigate('Scanner')} style={styles.button_main}>
-                    <Text style={styles.button_text}>Scan QR code</Text>
-                    {/* <SvgUri
-                        width="50"
-                        height="50"
-                        source={require('D:/programming/qr-code/src/app/qrreader/resources/images/qr.svg')} // Replace with the path to your SVG file
-                    /> */}
+                    {/* <Text style={styles.button_text}>Scan QR code</Text> */}
+                    <QRSvgComponent />
                 </TouchableOpacity>
             </View>
         );

@@ -5,6 +5,8 @@ import { NavigationProp, RouteProp } from '@react-navigation/native';
 
 import { colors } from '../resources/constants/colors.json';
 
+import LinkSvgComponent from './svg_components/link';
+
 const AdditionalInfos = ({ text }: any) => {
 
     const handlePress = () => {
@@ -14,12 +16,7 @@ const AdditionalInfos = ({ text }: any) => {
       if (isUrl(text)) {
         return (
           <TouchableOpacity onPress={handlePress}>
-            <Text>svg should be here</Text>
-            {/* <SvgUri
-              width="50"
-              height="50"
-              source={require('./path-to-your-svg-file.svg')} // Replace with the path to your SVG file
-            /> */}
+            <LinkSvgComponent />
           </TouchableOpacity>
         );
       }
