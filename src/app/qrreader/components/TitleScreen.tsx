@@ -21,8 +21,11 @@ const TitleScreen = ({ navigation, route }: TitleScreenProps) => {
 
   var data = route.params?.qrData;
 
+  var empty = false;
+
   if(data == null) {
     data = "QR code scanner\n\n\n\n";
+    empty = true;
   }
 
   // split the data into an object with 
@@ -43,11 +46,20 @@ const TitleScreen = ({ navigation, route }: TitleScreenProps) => {
   return (
     <View style={styles.title_screen_view}>
         <TopBar title={topic} />
-        <Heading main={title} sub={subtitle} />
-        <Line/>
-        <Description text={description} />
-        <AdditionalInfos text={additional_information} />
-        <QRButton navigation={navigation} />
+        {!empty && (
+          <>
+            <Heading main={title} sub={subtitle} />
+            <Line/>
+            <Description text={description} />
+            <AdditionalInfos text={additional_information} />
+            <QRButton navigation={navigation} fill={false} />
+          </>
+        )}
+        {empty && (
+          <>
+            <QRButton navigation={navigation} fill={true} />
+          </>
+        )}
     </View>
   );
 };
