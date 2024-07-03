@@ -11,21 +11,33 @@ import Description from './Description';
 import Line from './Line';
 import AdditionalInfos from './AdditionalInfos';
 import QRButton from './QRButton';
+import WebsiteMetadata from './DisplayWebsite';
 
 type TitleScreenProps = {
   navigation: NavigationProp<any>;
   route: RouteProp<any>;
 };
 
-const TitleScreen = ({ navigation, route }: TitleScreenProps) => {
+const TitleScreen = ({ navigation, route }: TitleScreenProps) => {  
 
   var data = route.params?.qrData;
 
   var empty = false;
 
+  console.log({data});
+
   if(data == null) {
     data = "QR code scanner\n\n\n\n";
     empty = true;
+  }
+
+  // check if data starts with "(^_^)" and then remove it
+  if(data.startsWith("(^_^)")) {
+    data = data.substring(5);
+    
+    // decrypt the data
+    // TODO: implement decryption
+    
   }
 
   // split the data into an object with 
@@ -35,34 +47,69 @@ const TitleScreen = ({ navigation, route }: TitleScreenProps) => {
   // 4. description
   // 5. additional information (e.g. link to a website)
   // all parts should be separated by a newline character
-
-  var parts = data.split('\n');
+  
+  // make 0 topic, 1 title, 2 subtitle, last additional information and the rest description
+  var parts = data.split("\n");
   var topic = parts[0];
   var title = parts[1];
   var subtitle = parts[2];
-  var description = parts[3];
-  var additional_information = parts[4];
+  var description = parts.slice(3, parts.length - 1).join("\n");
+  var additional_information = parts[parts.length - 1];  
+
+  function isUrl(string: string): boolean {
+    var res = string.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
+    return (res !== null)
+  }
+
+  var justLink = false;
+  var justDescription = false;
 
   // check if any of the parts are null
   if(topic == null || title == null || subtitle == null || description == null || additional_information == null) {
-    empty = true;
+    // empty = true;
+    var x = 0;
+    // check if the data is a link
+    if(isUrl(data)) {
+      justLink = true;
+    } else {
+      justDescription = true;
+    }
+
   }
 
   return (
     <View style={styles.title_screen_view}>
-        <TopBar title={topic} />
-        {!empty && (
+        {/* <WebsiteMetadata url="https://en.wikipedia.org/wiki/Chemokine" /> */}
+        {!empty && !justLink && !justDescription && (
           <>
+            <TopBar title={topic} />
             <Heading main={title} sub={subtitle} />
             <Line/>
             <Description text={description} />
             <AdditionalInfos text={additional_information} />
-            <QRButton navigation={navigation} fill={false} />
+            <QRButton navigation={navigation} fill={false} data={data} />
+          </>
+        )}
+        {justLink && (
+          <>
+            <TopBar title="Scanned QR code" />
+            <WebsiteMetadata url={data} />
+            <QRButton navigation={navigation} fill={false} data={data} />
+          </>
+        )}
+        {justDescription && (
+          <>
+            <TopBar title="Scanned QR code" />
+            <Heading main="Unknown" sub="QR code is not in the correct format" />
+            <Line/>
+            <Description text={data} />
+            <QRButton navigation={navigation} fill={false} data={data} />
           </>
         )}
         {empty && (
           <>
-            <QRButton navigation={navigation} fill={true} />
+            <TopBar title="Scann a QR code" />
+            <QRButton navigation={navigation} fill={true} data={data} />
           </>
         )}
     </View>

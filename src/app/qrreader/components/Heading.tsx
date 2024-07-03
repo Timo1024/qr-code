@@ -26,12 +26,12 @@ const styles = StyleSheet.create({
         paddingLeft: 25,
     },
     heading_main : {
-        color: '#FFFFFF',
+        color: colors.text,
         fontSize: 32
     },
     heading_sub : {
-        color: '#FFFFFF',
-        fontSize: 16,
+        color: colors.text,
+        fontSize: 18,
         fontWeight: "200"
     }
 });

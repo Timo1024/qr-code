@@ -5,11 +5,11 @@ import QRSvgComponent from './svg_components/qr';
 
 import { colors } from '../resources/constants/colors.json';
 
-const QRButton = ({ navigation, fill }: any) => {
+const QRButton = ({ navigation, fill, data }: any) => {
     if(!fill) {
         return (
             <View style={styles.button_view}>
-                <TouchableOpacity onPress={() => navigation.navigate('Scanner')} style={styles.button_main}>
+                <TouchableOpacity onPress={() => navigation.navigate('Scanner', { qrData: data })} style={styles.button_main}>
                     {/* <Text style={styles.button_text}>Scan QR code</Text> */}
                     <QRSvgComponent />
                 </TouchableOpacity>
@@ -18,7 +18,7 @@ const QRButton = ({ navigation, fill }: any) => {
     } else {
         return (
             <View style={styles.button_view_fill}>
-                <TouchableOpacity onPress={() => navigation.navigate('Scanner')} style={styles.button_main}>
+                <TouchableOpacity onPress={() => navigation.navigate('Scanner', { qrData: data })} style={styles.button_main}>
                     {/* <Text style={styles.button_text}>Scan QR code</Text> */}
                     <QRSvgComponent />
                 </TouchableOpacity>
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center', 
         alignItems: 'center',
         backgroundColor: colors.primary,
-        padding: 30
+        padding: 30,
     },
     button_view_fill : {
         width: '100%',

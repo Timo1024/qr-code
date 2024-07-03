@@ -4,18 +4,19 @@ import { StyleSheet, Text, TouchableOpacity, View, Dimensions } from 'react-nati
 
 import { colors } from '../resources/constants/colors.json';
 
-import { NavigationProp } from '@react-navigation/native';
+import { NavigationProp, RouteProp } from '@react-navigation/native';
 
 import BackarrowSvgComponent from './svg_components/backarrow';
 import CancelSvgComponent from './svg_components/cancel';
 
 type ScannerScreenProps = {
   navigation: NavigationProp<any>;
+  route: RouteProp<any>;
 };
 
 const { width, height } = Dimensions.get('window');
 
-const ScannerScreen = ({ navigation }: ScannerScreenProps) => {
+const ScannerScreen = ({ navigation, route }: ScannerScreenProps) => {
   const onBarCodeRead = (scanResult: { data: any; }) => {
     navigation.navigate('Title', { qrData: scanResult.data });
   };
@@ -45,7 +46,7 @@ const ScannerScreen = ({ navigation }: ScannerScreenProps) => {
       </View>
       <View style={styles.button_view}>
         {/* <Text style={styles.scannerText}>Scan a QR code</Text> */}
-        <TouchableOpacity onPress={() => navigation.navigate('Title')} style={styles.button_main}>
+        <TouchableOpacity onPress={() => navigation.navigate('Title', { qrData: route.params?.qrData })} style={styles.button_main}>
             <CancelSvgComponent />
             <Text style={styles.scannerButtonText}>Cancel</Text>
         </TouchableOpacity>

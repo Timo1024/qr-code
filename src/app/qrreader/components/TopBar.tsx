@@ -18,10 +18,11 @@ export default TopBar;
 const styles = StyleSheet.create({
   top_bar_view : {
     width: '100%',
-    height: 100,
+    // height: 80,
     justifyContent: 'center', 
     alignItems: 'center',
     backgroundColor: colors.secondary,
+    padding: 25,
   },
     top_bar_view_title : {
         color: '#FFFFFF',
