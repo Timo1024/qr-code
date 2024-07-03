@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Text, View, StyleSheet } from 'react-native';
+const keys = require('../resources/constants/keys.json') as { encrypt_key: string };
 
 import { NavigationProp, RouteProp } from '@react-navigation/native';
 
@@ -18,6 +19,42 @@ type TitleScreenProps = {
   route: RouteProp<any>;
 };
 
+const key = keys.encrypt_key;
+
+function hexToBytes(hex: string): number[] {
+  const bytes = [];
+  for (let i = 0; i < hex.length; i += 2) {
+      bytes.push(parseInt(hex.substring(i, i + 2), 16));
+  }
+  return bytes;
+}
+
+function bytesToString(bytes: number[]): string {
+  let decodedString = '';
+  for (let i = 0; i < bytes.length; i++) {
+      decodedString += String.fromCharCode(bytes[i]);
+  }
+  return decodedString;
+}
+
+// Function to decrypt the data
+function decryptData(encoded_string: string, key: string) {
+
+    // convert key to a number
+    var key_int : number = parseInt(key);
+
+    const encryptedBytes = hexToBytes(encoded_string);
+    
+    // Simple decoding algorithm: XOR with the same key used for encryption
+    // const key_ = 0xAB;  // Same key used in Python example
+    const decryptedBytes = encryptedBytes.map(byte => byte ^ key_int);
+    
+    // Convert bytes back to UTF-16 string
+    const decryptedString = bytesToString(decryptedBytes);
+    
+    return decryptedString;
+}
+
 const TitleScreen = ({ navigation, route }: TitleScreenProps) => {  
 
   var data = route.params?.qrData;
@@ -34,9 +71,16 @@ const TitleScreen = ({ navigation, route }: TitleScreenProps) => {
   // check if data starts with "(^_^)" and then remove it
   if(data.startsWith("(^_^)")) {
     data = data.substring(5);
+
+    console.log({key});
     
     // decrypt the data
     // TODO: implement decryption
+    const decryptedData = decryptData(data, key);
+
+    console.log({decryptedData});
+    
+    data = decryptedData;
     
   }
 
@@ -108,7 +152,7 @@ const TitleScreen = ({ navigation, route }: TitleScreenProps) => {
         )}
         {empty && (
           <>
-            <TopBar title="Scann a QR code" />
+            <TopBar title="QR code scanner" />
             <QRButton navigation={navigation} fill={true} data={data} />
           </>
         )}
