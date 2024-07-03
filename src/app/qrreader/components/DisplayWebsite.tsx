@@ -17,15 +17,15 @@ const WebsiteMetadata = ({ url }: { url: string }) => {
         // Extract title
         const titleMatch = html.match(/<title>(.*?)<\/title>/);
         if (titleMatch && titleMatch[1]) {
-          setTitle(titleMatch[1]);
+            setTitle(titleMatch[1]);
         } else {
-            setDescription("")
+            setTitle("")
         }
 
         // Extract description
         const descriptionMatch = html.match(/<meta name="description" content="(.*?)"/);
         if (descriptionMatch && descriptionMatch[1]) {
-          setDescription(descriptionMatch[1]);
+            setDescription(descriptionMatch[1]);
         } else {
             setDescription("")
         }
