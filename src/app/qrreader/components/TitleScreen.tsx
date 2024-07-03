@@ -43,6 +43,11 @@ const TitleScreen = ({ navigation, route }: TitleScreenProps) => {
   var description = parts[3];
   var additional_information = parts[4];
 
+  // check if any of the parts are null
+  if(topic == null || title == null || subtitle == null || description == null || additional_information == null) {
+    empty = true;
+  }
+
   return (
     <View style={styles.title_screen_view}>
         <TopBar title={topic} />

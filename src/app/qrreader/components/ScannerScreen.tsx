@@ -1,16 +1,19 @@
 import React from 'react';
 import { RNCamera } from 'react-native-camera';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Dimensions } from 'react-native';
 
 import { colors } from '../resources/constants/colors.json';
 
 import { NavigationProp } from '@react-navigation/native';
 
 import BackarrowSvgComponent from './svg_components/backarrow';
+import CancelSvgComponent from './svg_components/cancel';
 
 type ScannerScreenProps = {
   navigation: NavigationProp<any>;
 };
+
+const { width, height } = Dimensions.get('window');
 
 const ScannerScreen = ({ navigation }: ScannerScreenProps) => {
   const onBarCodeRead = (scanResult: { data: any; }) => {
@@ -29,11 +32,22 @@ const ScannerScreen = ({ navigation }: ScannerScreenProps) => {
           buttonNegative: 'Cancel',
         }}
       />
+      <View style={[styles.overlay]}>
+        <View style={styles.topOverlay} />
+          <View style={styles.middleOverlay}>
+            <View style={styles.sideOverlay} />
+              <View style={styles.centerOverlay}>
+                <Text style={styles.text}>Scan a QR code</Text>
+              </View>
+            <View style={styles.sideOverlay} />
+          </View>
+        <View style={styles.bottomOverlay} />
+      </View>
       <View style={styles.button_view}>
-        <Text style={styles.scannerText}>Scan a QR code</Text>
+        {/* <Text style={styles.scannerText}>Scan a QR code</Text> */}
         <TouchableOpacity onPress={() => navigation.navigate('Title')} style={styles.button_main}>
-            {/* <Text style={styles.button_text}>Scan QR code</Text> */}
-            <BackarrowSvgComponent />
+            <CancelSvgComponent />
+            <Text style={styles.scannerButtonText}>Cancel</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -42,31 +56,85 @@ const ScannerScreen = ({ navigation }: ScannerScreenProps) => {
 
 export default ScannerScreen;
 
+var backgroundColor = 'rgba(0, 0, 0, 0.5)';
+
 const styles = StyleSheet.create({
   button_view : {
     justifyContent: 'center', 
     alignItems: 'center',
     padding: 30,
     position: 'absolute',
-    bottom: 0,
+    bottom: '5%',
     alignSelf: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    // backgroundColor: 'rgba(255, 255, 255, 0.5)',
     // margin: 20,
     width: '100%',
   },
   scannerText: {
-    color: colors.primary,
+    color: colors.text,
     fontSize: 20,
     fontWeight: 'bold',
     alignSelf: 'center',
     marginBottom: 20,
   },
   button_main : {
-      alignItems: 'center',
-      backgroundColor: colors.primary,
-      padding: 15,
-      borderRadius: 5,
-      width: '20%',
-      alignSelf: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // backgroundColor: colors.primary,
+    padding: 10,
+    paddingLeft: 15,
+    paddingRight: 15,
+    borderRadius: 5,
+    // width: '30%',
+    alignSelf: 'center',
+    borderColor: colors.text,
+    borderWidth: 2,
+  },
+  scannerButtonText: {
+    color: colors.text,
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 10,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  topOverlay: {
+    flex: 1,
+    width: '100%',
+    backgroundColor: backgroundColor,
+  },
+  middleOverlay: {
+    flexDirection: 'row',
+  },
+  bottomOverlay: {
+    flex: 1,
+    width: '100%',
+    backgroundColor: backgroundColor,
+  },
+  sideOverlay: {
+    width: width * 0.1,
+    height: width * 0.8,
+    backgroundColor: backgroundColor,
+  },
+  centerOverlay: {
+    width: width * 0.8,
+    height: width * 0.8,
+    borderColor: colors.text,
+    borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    color: colors.text,
+    fontSize: 18,
   },
 });
