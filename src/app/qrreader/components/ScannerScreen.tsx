@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { RNCamera } from 'react-native-camera';
 import { StyleSheet, Text, TouchableOpacity, View, Dimensions } from 'react-native';
 
@@ -8,6 +8,8 @@ import { NavigationProp, RouteProp } from '@react-navigation/native';
 
 import BackarrowSvgComponent from './svg_components/backarrow';
 import CancelSvgComponent from './svg_components/cancel';
+import LightOffSvgComponent from './svg_components/lightOff';
+import LightOnSvgComponent from './svg_components/lightOn';
 
 type ScannerScreenProps = {
   navigation: NavigationProp<any>;
@@ -21,11 +23,22 @@ const ScannerScreen = ({ navigation, route }: ScannerScreenProps) => {
     navigation.navigate('Title', { qrData: scanResult.data });
   };
 
+  const [flash, setFlash] = useState(RNCamera.Constants.FlashMode.off);
+
+  const toggleFlash = () => {
+    setFlash(
+      flash === RNCamera.Constants.FlashMode.off
+        ? RNCamera.Constants.FlashMode.torch
+        : RNCamera.Constants.FlashMode.off
+    );
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <RNCamera
         style={{ flex: 1 }}
         onBarCodeRead={onBarCodeRead}
+        flashMode={flash}
         androidCameraPermissionOptions={{
           title: 'Permission to use camera',
           message: 'We need your permission to use your camera',
@@ -44,12 +57,18 @@ const ScannerScreen = ({ navigation, route }: ScannerScreenProps) => {
           </View>
         <View style={styles.bottomOverlay} />
       </View>
-      <View style={styles.button_view}>
-        {/* <Text style={styles.scannerText}>Scan a QR code</Text> */}
-        <TouchableOpacity onPress={() => navigation.navigate('Title', { qrData: route.params?.qrData })} style={styles.button_main}>
-            <CancelSvgComponent />
-            <Text style={styles.scannerButtonText}>Cancel</Text>
-        </TouchableOpacity>
+      
+      <View style={styles.buttonWrapper}>
+        <View style={styles.button_view}>
+          <TouchableOpacity onPress={() => navigation.navigate('Title', { qrData: route.params?.qrData })} style={styles.button_main}>
+              <CancelSvgComponent color={colors.text} size={34}/>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.button_view}>
+          <TouchableOpacity style={[styles.buttonLight, flash === RNCamera.Constants.FlashMode.torch && styles.buttonLightActive]} onPress={toggleFlash}>
+            {flash === RNCamera.Constants.FlashMode.off ? <LightOffSvgComponent color={colors.text} size={28} /> : <LightOnSvgComponent color={colors.secondary} size={28} />}
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -60,16 +79,20 @@ export default ScannerScreen;
 var backgroundColor = 'rgba(0, 0, 0, 0.5)';
 
 const styles = StyleSheet.create({
+  buttonWrapper: {
+    display: 'flex',
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 20,
+  },
   button_view : {
     justifyContent: 'center', 
     alignItems: 'center',
     padding: 30,
-    position: 'absolute',
-    bottom: '5%',
-    alignSelf: 'center',
-    // backgroundColor: 'rgba(255, 255, 255, 0.5)',
-    // margin: 20,
-    width: '100%',
+    // backgroundColor: "pink",
   },
   scannerText: {
     color: colors.text,
@@ -83,21 +106,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    // backgroundColor: colors.primary,
-    padding: 10,
-    paddingLeft: 15,
-    paddingRight: 15,
     borderRadius: 5,
-    // width: '30%',
+    height: 50,
+    width: 50,
     alignSelf: 'center',
     borderColor: colors.text,
     borderWidth: 2,
-  },
-  scannerButtonText: {
-    color: colors.text,
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginLeft: 10,
   },
   overlay: {
     position: 'absolute',
@@ -137,5 +151,20 @@ const styles = StyleSheet.create({
   text: {
     color: colors.text,
     fontSize: 18,
+  },
+  buttonLight: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    height: 50,
+    width: 50,
+    alignSelf: 'center',
+    borderColor: colors.text,
+    borderWidth: 2,
+  },
+  buttonLightActive: {
+    backgroundColor: colors.text,
   },
 });
