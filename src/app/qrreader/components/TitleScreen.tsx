@@ -153,7 +153,7 @@ const TitleScreen = ({ navigation, route }: TitleScreenProps) => {
         {empty && (
           <>
             <TopBar title="QR code scanner" />
-            <QRButton navigation={navigation} fill={true} data={data} />
+            <QRButton navigation={navigation} fill={true} data={null} />
           </>
         )}
     </View>
