@@ -61,7 +61,7 @@ const TitleScreen = ({ navigation, route }: TitleScreenProps) => {
 
   var empty = false;
 
-  console.log({data});
+  // console.log({data});
 
   if(data == null) {
     data = "QR code scanner\n\n\n\n";
@@ -72,13 +72,13 @@ const TitleScreen = ({ navigation, route }: TitleScreenProps) => {
   if(data.startsWith("(^_^)")) {
     data = data.substring(5);
 
-    console.log({key});
+    // console.log({key});
     
     // decrypt the data
     // TODO: implement decryption
     const decryptedData = decryptData(data, key);
 
-    console.log({decryptedData});
+    // console.log({decryptedData});
     
     data = decryptedData;
     
