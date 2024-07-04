@@ -59,15 +59,17 @@ const ScannerScreen = ({ navigation, route }: ScannerScreenProps) => {
       </View>
       
       <View style={styles.buttonWrapper}>
-        <View style={styles.button_view}>
-          <TouchableOpacity onPress={() => navigation.navigate('Title', { qrData: route.params?.qrData })} style={styles.button_main}>
-              <CancelSvgComponent color={colors.text} size={34}/>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.button_view}>
-          <TouchableOpacity style={[styles.buttonLight, flash === RNCamera.Constants.FlashMode.torch && styles.buttonLightActive]} onPress={toggleFlash}>
-            {flash === RNCamera.Constants.FlashMode.off ? <LightOffSvgComponent color={colors.text} size={28} /> : <LightOnSvgComponent color={colors.secondary} size={28} />}
-          </TouchableOpacity>
+        <View style={styles.buttonWrapperInner}>
+          <View style={styles.button_view}>
+            <TouchableOpacity onPress={() => navigation.navigate('Title', { qrData: route.params?.qrData })} style={styles.button_main}>
+                <CancelSvgComponent color={colors.text} size={34}/>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.button_view}>
+            <TouchableOpacity style={[styles.buttonLight, flash === RNCamera.Constants.FlashMode.torch && styles.buttonLightActive]} onPress={toggleFlash}>
+              {flash === RNCamera.Constants.FlashMode.off ? <LightOffSvgComponent color={colors.text} size={28} /> : <LightOnSvgComponent color={colors.secondary} size={28} />}
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </View>
@@ -85,13 +87,21 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     padding: 20,
+    // backgroundColor: "pink"
+  },
+  buttonWrapperInner: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '40%',
+    // backgroundColor: "red"
   },
   button_view : {
     justifyContent: 'center', 
     alignItems: 'center',
-    padding: 30,
+    paddingBottom: 30,
     // backgroundColor: "pink",
   },
   scannerText: {
