@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Linking } from 'react-
 
 import { colors } from '../resources/constants/colors.json';
 import LinkSvgComponent from './svg_components/link';
+import CopyableText from './CopyableText';
 
 const WebsiteMetadata = ({ url }: { url: string }) => {
   const [title, setTitle] = useState('');
@@ -55,6 +56,7 @@ const WebsiteMetadata = ({ url }: { url: string }) => {
         <TouchableOpacity onPress={handlePress} style={styles.linkButton}>
             <Text style={styles.linkText}>Go to website</Text>
         </TouchableOpacity>
+        <CopyableText textToCopy={ url } opacity={1} withText={true}/>
     </View>
   );
 };
@@ -65,10 +67,11 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         padding: 15,
         borderRadius: 5,
-        marginTop: 10,
+        marginTop: 0,
         alignItems: 'center',
         width: '50%',
         alignSelf: 'center',
+        marginBottom: 30,
     },
     linkText: {
         color: colors.accent,
@@ -85,11 +88,11 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         color: colors.text,
-        marginBottom: 20,
+        marginBottom: 30,
     },
     description: {
         color: colors.text,
-        marginBottom: 20,
+        marginBottom: 30,
         fontSize: 18,
         fontWeight: "200",
         lineHeight: 22,

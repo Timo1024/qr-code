@@ -12,7 +12,7 @@ const Description = ({ text }: any) => {
         <View style={styles.description_view}>
           <Text style={styles.content}>{ text }</Text>
         </View>
-        <CopyableText textToCopy={ text }/>
+        <CopyableText textToCopy={ text } opacity={0.7} withText={false} />
       </View>
     );
 };
