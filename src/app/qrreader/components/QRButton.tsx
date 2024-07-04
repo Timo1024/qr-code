@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: colors.primary,
         padding: 30,
+        paddingBottom: 50,
     },
     button_view_fill : {
         width: '100%',

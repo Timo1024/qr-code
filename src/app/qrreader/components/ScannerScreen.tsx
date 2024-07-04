@@ -89,6 +89,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     padding: 20,
+    // paddingBottom: 20,
     // backgroundColor: "pink"
   },
   buttonWrapperInner: {
@@ -102,7 +103,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center', 
     alignItems: 'center',
     paddingBottom: 30,
-    // backgroundColor: "pink",
+    // backgroundColor: "blue",
   },
   scannerText: {
     color: colors.text,
