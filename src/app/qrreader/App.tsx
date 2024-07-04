@@ -43,13 +43,23 @@ const Stack = createStackNavigator();
 function App(): React.JSX.Element {
 
   return (
-    <NavigationContainer>
-      <StatusBar backgroundColor={colors.secondary} barStyle="light-content" />
-      <Stack.Navigator initialRouteName="Title">
-        <Stack.Screen name="Title" component={TitleScreen} options={{headerShown: false}} />
-        <Stack.Screen name="Scanner" component={ScannerScreen} options={{headerShown: false}} />
-      </Stack.Navigator>
-    </NavigationContainer>
+      <NavigationContainer theme={{
+        dark: true,
+        colors: {
+          background: colors.primary,
+          primary: '',
+          card: '',
+          text: '',
+          border: '',
+          notification: ''
+        },
+      }}>
+        <StatusBar backgroundColor={colors.secondary} barStyle="light-content" />
+        <Stack.Navigator initialRouteName="Title" >
+          <Stack.Screen name="Title" component={TitleScreen} options={{headerShown: false}} />
+          <Stack.Screen name="Scanner" component={ScannerScreen} options={{headerShown: false}} />
+        </Stack.Navigator>
+      </NavigationContainer>
   );
 }
 
@@ -69,7 +79,7 @@ const styles = StyleSheet.create({
   },
   highlight: {
     fontWeight: '700',
-  },
+  }
 });
 
 export default App;
