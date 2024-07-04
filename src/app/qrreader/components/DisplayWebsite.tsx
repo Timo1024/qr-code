@@ -9,6 +9,9 @@ const WebsiteMetadata = ({ url }: { url: string }) => {
   const [description, setDescription] = useState('');
 
   useEffect(() => {
+    setTitle("");
+    setDescription("");
+
     const fetchMetadata = async () => {
       try {
         const response = await fetch(url);
