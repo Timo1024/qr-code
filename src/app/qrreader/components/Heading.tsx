@@ -29,11 +29,12 @@ const styles = StyleSheet.create({
     },
     heading_main : {
         color: colors.text,
-        fontSize: 32
+        fontSize: 32,
+        fontWeight: "400"
     },
     heading_sub : {
         color: colors.text,
         fontSize: 18,
-        fontWeight: "200"
+        fontWeight: "300"
     }
 });

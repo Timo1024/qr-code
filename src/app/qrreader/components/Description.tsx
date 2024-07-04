@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     content : {
         color: colors.text,
         fontSize: 18,
-        fontWeight: "200",
+        fontWeight: "300",
         lineHeight: 22,
     },
     description_wrapper : {
