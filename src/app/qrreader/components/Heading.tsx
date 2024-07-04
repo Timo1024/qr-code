@@ -9,7 +9,9 @@ const Heading = ({ main, sub }: any) => {
     return (
       <View style={styles.heading_view}>
         <Text style={styles.heading_main}>{ main }</Text>
-        <Text style={styles.heading_sub}>{ sub }</Text>
+        {sub != "" &&
+            <Text style={styles.heading_sub}>{ sub }</Text>
+        }
       </View>
     );
 };

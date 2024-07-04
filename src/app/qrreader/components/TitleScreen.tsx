@@ -136,15 +136,15 @@ const TitleScreen = ({ navigation, route }: TitleScreenProps) => {
         )}
         {justLink && (
           <>
-            <TopBar title="Scanned QR code" />
+            <TopBar title="Scanned QR-Code" />
             <WebsiteMetadata url={data} />
             <QRButton navigation={navigation} fill={false} data={data} />
           </>
         )}
         {justDescription && (
           <>
-            <TopBar title="Scanned QR code" />
-            <Heading main="Unknown" sub="QR code is not in the correct format" />
+            <TopBar title="QR-Code Scanner" />
+            <Heading main="Your scanned QR-Code" sub="" />
             <Line/>
             <Description text={data} />
             <QRButton navigation={navigation} fill={false} data={data} />
@@ -152,7 +152,7 @@ const TitleScreen = ({ navigation, route }: TitleScreenProps) => {
         )}
         {empty && (
           <>
-            <TopBar title="QR code scanner" />
+            <TopBar title="QR-Code scanner" />
             <QRButton navigation={navigation} fill={true} data={null} />
           </>
         )}

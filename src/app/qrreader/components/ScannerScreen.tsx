@@ -51,7 +51,7 @@ const ScannerScreen = ({ navigation, route }: ScannerScreenProps) => {
           <View style={styles.middleOverlay}>
             <View style={styles.sideOverlay} />
               <View style={styles.centerOverlay}>
-                <Text style={styles.text}>Scan a QR code</Text>
+                <Text style={styles.text}>Scan a QR-Code</Text>
               </View>
             <View style={styles.sideOverlay} />
           </View>
