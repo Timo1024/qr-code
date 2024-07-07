@@ -13,6 +13,7 @@ import Line from './Line';
 import AdditionalInfos from './AdditionalInfos';
 import QRButton from './QRButton';
 import WebsiteMetadata from './DisplayWebsite';
+import InitialButtons from './InitialButtons';
 
 type TitleScreenProps = {
   navigation: NavigationProp<any>;
@@ -152,8 +153,9 @@ const TitleScreen = ({ navigation, route }: TitleScreenProps) => {
         )}
         {empty && (
           <>
-            <TopBar title="QR-Code scanner" />
-            <QRButton navigation={navigation} fill={true} data={null} />
+            <TopBar title="QR-Tools" />
+            <InitialButtons navigation={navigation} />
+            {/* <QRButton navigation={navigation} fill={true} data={null} /> */}
           </>
         )}
     </View>
