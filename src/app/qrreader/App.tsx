@@ -5,7 +5,8 @@
  * @format
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
+
 import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
@@ -24,12 +25,16 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import SQLite from 'react-native-sqlite-storage';
+
+import { initializeDatabase, closeDatabase } from './services/database';
 
 import CameraComponent from './components/CameraComponent';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import TitleScreen from './components/TitleScreen';
 import ScannerScreen from './components/ScannerScreen';
+import DBDebugScreen from './components/DBDebugScreen';
 
 // import resources
 import { colors } from './resources/constants/colors.json';
@@ -42,24 +47,39 @@ const Stack = createStackNavigator();
 
 function App(): React.JSX.Element {
 
+  useEffect(() => {
+    let db: SQLite.SQLiteDatabase | undefined;
+
+    const setupDatabase = async () => {
+      db = await initializeDatabase();
+    };
+
+    setupDatabase();
+
+    return () => {
+      closeDatabase(db);
+    };
+  }, []);
+
   return (
-      <NavigationContainer theme={{
-        dark: true,
-        colors: {
-          background: colors.primary,
-          primary: '',
-          card: '',
-          text: '',
-          border: '',
-          notification: ''
-        },
-      }}>
-        <StatusBar backgroundColor={colors.secondary} barStyle="light-content" />
-        <Stack.Navigator initialRouteName="Title" >
-          <Stack.Screen name="Title" component={TitleScreen} options={{headerShown: false}} />
-          <Stack.Screen name="Scanner" component={ScannerScreen} options={{headerShown: false}} />
-        </Stack.Navigator>
-      </NavigationContainer>
+    <NavigationContainer theme={{
+      dark: true,
+      colors: {
+        background: colors.primary,
+        primary: '',
+        card: '',
+        text: '',
+        border: '',
+        notification: ''
+      },
+    }}>
+      <StatusBar backgroundColor={colors.secondary} barStyle="light-content" />
+      <Stack.Navigator initialRouteName="Title" >
+        <Stack.Screen name="Title" component={TitleScreen} options={{headerShown: false}} />
+        <Stack.Screen name="Scanner" component={ScannerScreen} options={{headerShown: false}} />
+        <Stack.Screen name="DBDebug" component={DBDebugScreen} options={{headerShown: false}} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 

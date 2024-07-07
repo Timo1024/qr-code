@@ -10,6 +10,7 @@ import FolderSvgComponent from './svg_components/folder';
 const screenWidth = Dimensions.get('window').width;
 
 const InitialButtons = ({ navigation }: any) => {
+
     return(
         <View style={styles.button_view}>
             <TouchableOpacity onPress={() => navigation.navigate('Scanner', { qrData: null })} style={styles.button_primary}>

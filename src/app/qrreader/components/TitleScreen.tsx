@@ -155,7 +155,9 @@ const TitleScreen = ({ navigation, route }: TitleScreenProps) => {
           <>
             <TopBar title="QR-Tools" />
             <InitialButtons navigation={navigation} />
-            {/* <QRButton navigation={navigation} fill={true} data={null} /> */}
+            {/* TODO remove when finished debugging */}
+            {/* add button whihc redirects to DBDebugScreen */}
+            <Button title="DB Debug Screen" onPress={() => navigation.navigate('DBDebug', { qrData: null })} />
           </>
         )}
     </View>
