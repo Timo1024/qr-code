@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, FlatList, StyleSheet, Dimensions, TouchableWithoutFeedback } from 'react-native';
-import { initializeDatabase, addEntry, removeAllEntries, getAllEntries } from '../services/database';
+import { initializeDatabase, addEntry, removeAllEntries, getAllEntries, getFilteredEntries } from '../services/database';
 
 import { colors } from '../resources/constants/colors.json';
 
@@ -36,7 +36,9 @@ const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
     
     const [db, setDb] = useState<SQLiteDatabase | null>(null);
     const [codes, setCodes] = useState<Codes[]>([]);
-    const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
+    const [option, setOption] = useState<string>("all");
+    const [search, setSearch] = useState<string>("");
     
     useEffect(() => {        
         const setupDatabase = async () => {
@@ -55,6 +57,10 @@ const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
         
         setupDatabase();
     }, []);
+
+    useEffect(() => {
+        handleSearch();
+    }, [search]);
     
     const loadEntries = async (database: SQLiteDatabase) => {
         try {
@@ -68,13 +74,13 @@ const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
     const handleAddEntry = async () => {
         // make random strings
         var   reference : string | null = Math.random().toString(36).substring(7);
-        const topic : string | null = Math.random().toString(36).substring(7);
-        const title : string | null = Math.random().toString(36).substring(7);
-        var   subtitle : string | null = Math.random().toString(36).substring(7);
-        const additional : string | null = Math.random().toString(36).substring(7);
+        const topic : string | null = generateLoremIpsum(1);
+        const title : string | null = generateLoremIpsum(2);
+        var   subtitle : string | null = generateLoremIpsum(6);
+        const additional : string | null = generateLoremIpsum(10);
 
         // make random string of length 100
-        const description = generateRandomString(100);
+        const description = generateLoremIpsum(10);
         const tags = generateSemicolonDelimitedTextString(4);
 
         // 50% of the time, there should be no reference
@@ -107,8 +113,25 @@ const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
         }
     };
 
-    console.log({codes});
-    
+    const handleSearchInput = (text: string) => {
+        setSearch(text);
+    }
+
+    const handleSearch  = async () => {
+        // TODO implement search
+        console.log({search});
+        console.log({option});
+
+        if(db) {
+            try {
+                const entries : Codes[] = await getFilteredEntries(db, search, option);
+                setCodes(entries);
+            } catch (error) {
+                console.error('Failed to load entries:', error);
+            }
+        }
+        
+    };    
     
     return (
         <TouchableWithoutFeedback onPress={() => setIsOpen(false)}>
@@ -116,8 +139,8 @@ const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
                 <Button title="Add Random Entry" onPress={handleAddEntry} />
                 <Button title="Remove All Entries" onPress={handleRemoveAllEntries} />
                 <View style={styles.search}>
-                    <DropdownMenu options={["All", "Tags", "Topic", "Title", "Subtitle", "Content"]} setIsOpen={setIsOpen} isOpen={isOpen} />
-                    <TextInput placeholder="Search" style={styles.textInput}/>
+                    <DropdownMenu options={["All", "Tags", "Topic", "Title", "Subtitle", "Content"]} setIsOpen={setIsOpen} isOpen={isOpen} onChange={handleSearch} search={search} option={option} setOption={setOption} />
+                    <TextInput placeholder="Search" style={styles.textInput} onChangeText={handleSearchInput}/>
                 </View>
                 <FlatList
                     data={codes}
@@ -178,8 +201,28 @@ function generateSemicolonDelimitedTextString(length: number): string {
     const randint = Math.floor(Math.random() * length);
     var result = '';
     for (let i = 0; i < randint; i++) {
-        result += generateRandomString(10) + ';';
+        result += generateLoremIpsum(1) + ';';
     }
-    result += generateRandomString(10);
+    result += generateLoremIpsum(1);
     return result;
 }
+const loremWords = [
+    "lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit",
+    "sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore",
+    "magna", "aliqua", "ut", "enim", "ad", "minim", "veniam", "quis", "nostrud",
+    "exercitation", "ullamco", "laboris", "nisi", "ut", "aliquip", "ex", "ea",
+    "commodo", "consequat", "duis", "aute", "irure", "dolor", "in", "reprehenderit",
+    "in", "voluptate", "velit", "esse", "cillum", "dolore", "eu", "fugiat", "nulla",
+    "pariatur", "excepteur", "sint", "occaecat", "cupidatat", "non", "proident",
+    "sunt", "in", "culpa", "qui", "officia", "deserunt", "mollit", "anim", "id", "est",
+    "laborum"
+  ];
+  
+  const generateLoremIpsum = (wordCount: number): string => {
+    let loremText = "";
+    for (let i = 0; i < wordCount; i++) {
+      const randomIndex = Math.floor(Math.random() * loremWords.length);
+      loremText += loremWords[randomIndex] + " ";
+    }
+    return loremText.trim();
+  };

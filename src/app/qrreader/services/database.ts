@@ -85,43 +85,111 @@ const addEntry = async (
     description : string = "no description", 
     additional : string | null = null,
     tags : string | null = null) => {
-        var date = new Date().toISOString();
-        if(!date){
-            date = "no date";
+    var date = new Date().toISOString();
+    if(!date){
+        date = "no date";
+    }
+    
+    logTableColumns(db, 'codes');
+    
+    await new Promise<void>((resolve, reject) => {
+        db.transaction(tx => {
+            tx.executeSql(
+                'INSERT INTO codes (reference, date, topic, title, subtitle, description, additional, tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?);',
+                [reference, date, topic, title, subtitle, description, additional, tags],
+                () => resolve(),
+                error => reject(error)
+            );
+        });
+    });
+};
+
+const removeAllEntries = async (db: SQLite.SQLiteDatabase) => {
+    await new Promise<void>((resolve, reject) => {
+        db.transaction(tx => {
+            tx.executeSql(
+                'DELETE FROM codes;',
+                [],
+                () => resolve(),
+                error => reject(error)
+            );
+        });
+    });
+};
+
+const getAllEntries = async (db: SQLite.SQLiteDatabase) => {
+    return new Promise<Codes[]>((resolve, reject) => {
+        db.transaction(tx => {
+            tx.executeSql(
+                'SELECT * FROM codes;',
+                [],
+                (tx, results) => {
+                    const rows : Codes[] = [];
+                    for (let i = 0; i < results.rows.length; i++) {
+                        rows.push(results.rows.item(i));
+                    }
+                    resolve(rows);
+                },
+                error => reject(error)
+            );
+        });
+    });
+};
+
+// Function to close the database
+const closeDatabase = async (db: SQLite.SQLiteDatabase | undefined) => {
+    if (db) {
+        try {
+            await db.close();
+            console.log("Database closed.");
+        } catch (error) {
+            console.error("Error closing database:", error);
         }
-        
-        logTableColumns(db, 'codes');
-        
-        await new Promise<void>((resolve, reject) => {
-            db.transaction(tx => {
-                tx.executeSql(
-                    'INSERT INTO codes (reference, date, topic, title, subtitle, description, additional, tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?);',
-                    [reference, date, topic, title, subtitle, description, additional, tags],
-                    () => resolve(),
-                    error => reject(error)
-                );
-            });
+    }
+};
+
+// TODO remove when finished logging
+const logTableColumns = async (db: SQLite.SQLiteDatabase, tableName: string) => {
+    await new Promise<void>((resolve, reject) => {
+        db.transaction(tx => {
+            tx.executeSql(
+                `PRAGMA table_info(${tableName});`,
+                [],
+                (_, result) => {
+                    console.log(`Columns in ${tableName}:`);
+                    let rows = result.rows;
+                    for (let i = 0; i < rows.length; i++) {
+                        console.log(rows.item(i));
+                    }
+                    resolve();
+                },
+                error => {
+                    console.error(`Error fetching columns for table ${tableName}:`, error);
+                    reject(error);
+                }
+            );
         });
-    };
-    
-    const removeAllEntries = async (db: SQLite.SQLiteDatabase) => {
-        await new Promise<void>((resolve, reject) => {
-            db.transaction(tx => {
-                tx.executeSql(
-                    'DELETE FROM codes;',
-                    [],
-                    () => resolve(),
-                    error => reject(error)
-                );
-            });
-        });
-    };
-    
-    const getAllEntries = async (db: SQLite.SQLiteDatabase) => {
+    });
+};
+
+const getFilteredEntries = async (db: SQLite.SQLiteDatabase, search:string, option:string) => {
+
+
+    option = option.toLowerCase();
+
+    if(!option){
+        option = "all";
+    }
+    if(!search){
+        search = "";
+    }
+
+    // if option == "All" then search for column topic, title, subtitle, description, additional, tags
+    if(option == "all") {
         return new Promise<Codes[]>((resolve, reject) => {
             db.transaction(tx => {
                 tx.executeSql(
-                    'SELECT * FROM codes;',
+                    `SELECT * FROM codes WHERE topic LIKE '%${search}%' OR title LIKE '%${search}%' OR subtitle LIKE '%${search}%' OR description LIKE '%${search}%' OR additional LIKE '%${search}%' OR tags LIKE '%${search}%';`,
                     [],
                     (tx, results) => {
                         const rows : Codes[] = [];
@@ -134,42 +202,38 @@ const addEntry = async (
                 );
             });
         });
-    };
-    
-    // Function to close the database
-    const closeDatabase = async (db: SQLite.SQLiteDatabase | undefined) => {
-        if (db) {
-            try {
-                await db.close();
-                console.log("Database closed.");
-            } catch (error) {
-                console.error("Error closing database:", error);
-            }
-        }
-    };
-    
-    // TODO remove when finished logging
-    const logTableColumns = async (db: SQLite.SQLiteDatabase, tableName: string) => {
-        await new Promise<void>((resolve, reject) => {
+    } else {
+
+        var list: { [key: string]: string } = {
+            "topic": "topic",
+            "title": "title",
+            "subtitle": "subtitle",
+            "content": "description",
+            "tags": "tags"
+        };
+
+        var column = list[option];
+
+        console.log({option});
+        
+
+        return new Promise<Codes[]>((resolve, reject) => {
             db.transaction(tx => {
                 tx.executeSql(
-                    `PRAGMA table_info(${tableName});`,
+                    `SELECT * FROM codes WHERE ${column} LIKE '%${search}%';`,
                     [],
-                    (_, result) => {
-                        console.log(`Columns in ${tableName}:`);
-                        let rows = result.rows;
-                        for (let i = 0; i < rows.length; i++) {
-                            console.log(rows.item(i));
+                    (tx, results) => {
+                        const rows : Codes[] = [];
+                        for (let i = 0; i < results.rows.length; i++) {
+                            rows.push(results.rows.item(i));
                         }
-                        resolve();
+                        resolve(rows);
                     },
-                    error => {
-                        console.error(`Error fetching columns for table ${tableName}:`, error);
-                        reject(error);
-                    }
+                    error => reject(error)
                 );
             });
         });
-    };
-    
-    export { initializeDatabase, closeDatabase, addEntry, removeAllEntries, getAllEntries };
+    }
+}
+
+export { initializeDatabase, closeDatabase, addEntry, removeAllEntries, getAllEntries, getFilteredEntries};

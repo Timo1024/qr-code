@@ -45,7 +45,7 @@ const QRItem = ({ data }: any) => {
         tags = data.tags.split(';');
     }
     
-    console.log({tags});
+    // console.log({tags});
     
     
     if(!is_data_sufficient) {

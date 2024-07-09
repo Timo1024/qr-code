@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Button, StyleSheet, Text, TouchableOpacity, Platform, Dimensions } from 'react-native';
 
 import { colors } from '../resources/constants/colors.json';
@@ -12,18 +12,29 @@ type DropdownMenuProps = {
     options: string[];
     setIsOpen: (isOpen: boolean) => void;
     isOpen: boolean;
+    onChange: () => void;
+    search: string;
+    option: string;
+    setOption: (option: string) => void;
 };
 
-const DropdownMenu = ({ options, setIsOpen, isOpen }: DropdownMenuProps) => {
-//   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+const DropdownMenu = ({ options, setIsOpen, isOpen, onChange, search, option, setOption }: DropdownMenuProps) => {
+    //   const [isOpen, setIsOpen] = useState(false);
+    const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
-  const handleOpen = () => setIsOpen(!isOpen);
+    useEffect(() => {
+        if (selectedOption !== null) {
+            onChange();
+        }
+    }, [option]);
 
-  const handleSelect = (option: React.SetStateAction<string | null>) => {
-    setSelectedOption(option);
-    setIsOpen(false);
-  };
+    const handleOpen = () => setIsOpen(!isOpen);
+
+    const handleSelect = (option: string) => {
+        setOption(option);
+        setSelectedOption(option);
+        setIsOpen(false);
+    };
 
   return (
     <View style={styles.container}>
@@ -31,13 +42,17 @@ const DropdownMenu = ({ options, setIsOpen, isOpen }: DropdownMenuProps) => {
         <TouchableOpacity onPress={handleOpen} style={styles.active}>
             <Text style={styles.text} numberOfLines={1} ellipsizeMode='tail'>{selectedOption || "All"}</Text>
             <View style={styles.icon_wrapper}>
-                {isOpen ? <ArrowTopSvgComponent height={15} width={15} color={colors.text} /> : <ArrowDownSvgComponent height={15} width={15} color={colors.text} />}
+                {isOpen ? 
+                    <ArrowTopSvgComponent height={15} width={15} color={colors.text} /> 
+                    : 
+                    <ArrowDownSvgComponent height={15} width={15} color={colors.text} />
+                }
             </View>
         </TouchableOpacity>
         <View style={styles.verticalLine}></View>
         {isOpen && (
             <View style={styles.dropdown}>
-            {options.map((option, index) => (
+            {options.map((option : string, index: React.Key | null | undefined) => (
                 <TouchableOpacity key={index} style={styles.option} onPress={() => handleSelect(option)}>
                     <Text style={styles.text}>{option}</Text>
                 </TouchableOpacity>
