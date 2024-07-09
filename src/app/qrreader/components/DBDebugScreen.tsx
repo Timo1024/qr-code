@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, FlatList, StyleSheet, Dimensions } from 'react-native';
-import { initializeDatabase, addRandomEntry, removeAllEntries, getAllEntries } from '../services/database';
+import { initializeDatabase, addEntry, removeAllEntries, getAllEntries } from '../services/database';
 
 import { colors } from '../resources/constants/colors.json';
 
@@ -15,16 +15,20 @@ type DBDebugScreenProps = {
 const { width, height } = Dimensions.get('window');
 
 // Define the User type
-interface User {
+interface Codes {
     id: number;
-    name: string;
-    age: number;
+    date: string;
+    topic: string;
+    title: string;
+    subtitle: string;
+    description: string;
+    additional: string;
   }
 
 const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
     
     const [db, setDb] = useState<SQLiteDatabase | null>(null);
-    const [users, setUsers] = useState<User[]>([]);
+    const [codes, setCodes] = useState<Codes[]>([]);
     
     useEffect(() => {        
         const setupDatabase = async () => {
@@ -46,19 +50,25 @@ const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
     
     const loadEntries = async (database: SQLiteDatabase) => {
         try {
-            const entries = await getAllEntries(database);
-            setUsers(entries);
+            const entries : Codes[] = await getAllEntries(database);
+            setCodes(entries);
         } catch (error) {
             console.error('Failed to load entries:', error);
         }
     };
     
-    const handleAddRandomEntry = async () => {
+    const handleAddEntry = async () => {
+        // make random strings
+        const topic : string = Math.random().toString(36).substring(7);
+        const title = Math.random().toString(36).substring(7);
+        const subtitle = Math.random().toString(36).substring(7);
+        const description = Math.random().toString(36).substring(7);
+        const additional = Math.random().toString(36).substring(7);
+
         console.log({db});
         if (db) {
             try {
-                
-                await addRandomEntry(db);
+                await addEntry(db, topic, title, subtitle, description, additional);
                 loadEntries(db);
             } catch (error) {
                 console.error('Failed to add random entry:', error);
@@ -77,21 +87,25 @@ const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
         }
     };
 
-    console.log({users});
+    // console.log({codes});
     
     
     return (
         <View style={styles.container}>
-        <Button title="Add Random Entry" onPress={handleAddRandomEntry} />
+        <Button title="Add Random Entry" onPress={handleAddEntry} />
         <Button title="Remove All Entries" onPress={handleRemoveAllEntries} />
         <FlatList
-        data={users}
+        data={codes}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
             <View style={styles.item}>
-            <Text>ID: {item.id}</Text>
-            <Text>Name: {item.name}</Text>
-            <Text>Age: {item.age}</Text>
+                <Text>ID: {item.id}</Text>
+                <Text>Date: {item.date}</Text>
+                <Text>Topic: {item.topic}</Text>
+                <Text>Title: {item.title}</Text>
+                <Text>Subtitle: {item.subtitle}</Text>
+                <Text>Description: {item.description}</Text>
+                <Text>Additional: {item.additional}</Text>
             </View>
         )}
         />
