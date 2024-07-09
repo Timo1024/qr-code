@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, FlatList, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, Button, FlatList, StyleSheet, Dimensions, TouchableWithoutFeedback } from 'react-native';
 import { initializeDatabase, addEntry, removeAllEntries, getAllEntries } from '../services/database';
 
 import { colors } from '../resources/constants/colors.json';
@@ -36,6 +36,7 @@ const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
     
     const [db, setDb] = useState<SQLiteDatabase | null>(null);
     const [codes, setCodes] = useState<Codes[]>([]);
+    const [isOpen, setIsOpen] = useState(true);
     
     useEffect(() => {        
         const setupDatabase = async () => {
@@ -110,21 +111,23 @@ const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
     
     
     return (
-        <View style={styles.container}>
-            <Button title="Add Random Entry" onPress={handleAddEntry} />
-            <Button title="Remove All Entries" onPress={handleRemoveAllEntries} />
-            <View style={styles.search}>
-                <DropdownMenu options={["Tags", "Topic", "Title", "Subtitle", "Content"]} />
-                <TextInput placeholder="Search" style={styles.textInput}/>
+        <TouchableWithoutFeedback onPress={() => setIsOpen(false)}>
+            <View style={styles.container}>
+                <Button title="Add Random Entry" onPress={handleAddEntry} />
+                <Button title="Remove All Entries" onPress={handleRemoveAllEntries} />
+                <View style={styles.search}>
+                    <DropdownMenu options={["All", "Tags", "Topic", "Title", "Subtitle", "Content"]} setIsOpen={setIsOpen} isOpen={isOpen} />
+                    <TextInput placeholder="Search" style={styles.textInput}/>
+                </View>
+                <FlatList
+                    data={codes}
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={({ item }) => (
+                        <QRItem data={item} />
+                    )}
+                />
             </View>
-            <FlatList
-                data={codes}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                    <QRItem data={item} />
-                )}
-            />
-        </View>
+        </TouchableWithoutFeedback>
     );
 };
 

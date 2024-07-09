@@ -1,13 +1,21 @@
 import React, { useState } from 'react';
-import { View, Button, StyleSheet, Text, TouchableOpacity, Platform } from 'react-native';
+import { View, Button, StyleSheet, Text, TouchableOpacity, Platform, Dimensions } from 'react-native';
 
 import { colors } from '../resources/constants/colors.json';
 
 import ArrowTopSvgComponent from './svg_components/arrowTop';
 import ArrowDownSvgComponent from './svg_components/arrowBottom';
 
-const DropdownMenu = ({ options }: { options: string[] }) => {
-  const [isOpen, setIsOpen] = useState(false);
+const { width, height } = Dimensions.get('window');
+
+type DropdownMenuProps = {
+    options: string[];
+    setIsOpen: (isOpen: boolean) => void;
+    isOpen: boolean;
+};
+
+const DropdownMenu = ({ options, setIsOpen, isOpen }: DropdownMenuProps) => {
+//   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const handleOpen = () => setIsOpen(!isOpen);
@@ -21,7 +29,7 @@ const DropdownMenu = ({ options }: { options: string[] }) => {
     <View style={styles.container}>
         {/* <Button title={selectedOption || "Select an option"} onPress={handleOpen} /> */}
         <TouchableOpacity onPress={handleOpen} style={styles.active}>
-            <Text style={styles.text} numberOfLines={1} ellipsizeMode='tail'>{selectedOption || "Select"}</Text>
+            <Text style={styles.text} numberOfLines={1} ellipsizeMode='tail'>{selectedOption || "All"}</Text>
             <View style={styles.icon_wrapper}>
                 {isOpen ? <ArrowTopSvgComponent height={15} width={15} color={colors.text} /> : <ArrowDownSvgComponent height={15} width={15} color={colors.text} />}
             </View>

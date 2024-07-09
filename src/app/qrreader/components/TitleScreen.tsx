@@ -157,7 +157,7 @@ const TitleScreen = ({ navigation, route }: TitleScreenProps) => {
             <InitialButtons navigation={navigation} />
             {/* TODO remove when finished debugging */}
             {/* add button whihc redirects to DBDebugScreen */}
-            <Button title="DB Debug Screen" onPress={() => navigation.navigate('DBDebug', { qrData: null })} />
+            {/* <Button title="DB Debug Screen" onPress={() => navigation.navigate('DBDebug', { qrData: null })} /> */}
           </>
         )}
     </View>

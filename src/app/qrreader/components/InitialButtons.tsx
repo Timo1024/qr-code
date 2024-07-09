@@ -25,7 +25,7 @@ const InitialButtons = ({ navigation }: any) => {
                     <JustQRSvgComponent height={35} width={35} color={colors.secondary}/>
                 </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Scanner', { qrData: null })} style={styles.button_secondary}>
+            <TouchableOpacity onPress={() => navigation.navigate('DBList', { qrData: null })} style={styles.button_secondary}>
                 <Text style={styles.text_secondary}>My QR-Codes</Text>
                 <View style={styles.icon_wrapper_secondary}>
                     <FolderSvgComponent height={35} width={35} color={colors.accent}/>

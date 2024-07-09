@@ -34,7 +34,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import TitleScreen from './components/TitleScreen';
 import ScannerScreen from './components/ScannerScreen';
-import DBDebugScreen from './components/DBDebugScreen';
+import DBDebugScreen from './components/DBListScreen';
 
 // import resources
 import { colors } from './resources/constants/colors.json';
@@ -77,7 +77,7 @@ function App(): React.JSX.Element {
       <Stack.Navigator initialRouteName="Title" >
         <Stack.Screen name="Title" component={TitleScreen} options={{headerShown: false}} />
         <Stack.Screen name="Scanner" component={ScannerScreen} options={{headerShown: false}} />
-        <Stack.Screen name="DBDebug" component={DBDebugScreen} options={{headerShown: false}} />
+        <Stack.Screen name="DBList" component={DBDebugScreen} options={{headerShown: false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );
