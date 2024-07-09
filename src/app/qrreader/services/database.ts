@@ -1,5 +1,6 @@
 // Import SQLite
 import SQLite from 'react-native-sqlite-storage';
+import RNFS from 'react-native-fs';
 
 // Enable debug mode for SQLite
 // TODO remove when everything with db works fine
@@ -8,6 +9,7 @@ SQLite.enablePromise(true);
 
 interface Codes {
     id: number;
+    reference: string;
     date: string;
     topic: string;
     title: string;
@@ -46,7 +48,7 @@ const initializeDatabase = async () => {
                 // console.log("Transaction complete");
             });
         });
-
+        
         // console.log("Table exists:", tableExists);
         
         if (!tableExists) {
@@ -54,7 +56,7 @@ const initializeDatabase = async () => {
             await new Promise<void>((resolve, reject) => {
                 db.transaction(tx => {
                     tx.executeSql(
-                        'CREATE TABLE IF NOT EXISTS codes (id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT NOT NULL, topic TEXT, title TEXT, subtitle TEXT, description TEXT NOT NULL, additional TEXT);',
+                        'CREATE TABLE IF NOT EXISTS codes (id INTEGER PRIMARY KEY AUTOINCREMENT, reference TEXT, date TEXT NOT NULL, topic TEXT, title TEXT, subtitle TEXT, description TEXT NOT NULL, additional TEXT);',
                         [],
                         () => {
                             resolve();
@@ -75,96 +77,97 @@ const initializeDatabase = async () => {
 
 const addEntry = async (
     db: SQLite.SQLiteDatabase, 
+    reference : string | null = null,
     topic : string | null = null, 
     title : string | null = null, 
     subtitle : string | null = null, 
     description : string = "no description", 
     additional : string | null = null) => {
-    var date = new Date().toISOString();
-    if(!date){
-        date = "no date";
-    }
-
-    logTableColumns(db, 'codes');
-    
-    await new Promise<void>((resolve, reject) => {
-        db.transaction(tx => {
-            tx.executeSql(
-                'INSERT INTO codes (date, topic, title, subtitle, description, additional) VALUES (?, ?, ?, ?, ?, ?);',
-                [date, topic, title, subtitle, description, additional],
-                () => resolve(),
-                error => reject(error)
-            );
-        });
-    });
-};
-
-const removeAllEntries = async (db: SQLite.SQLiteDatabase) => {
-    await new Promise<void>((resolve, reject) => {
-        db.transaction(tx => {
-            tx.executeSql(
-                'DELETE FROM codes;',
-                [],
-                () => resolve(),
-                error => reject(error)
-            );
-        });
-    });
-};
-
-const getAllEntries = async (db: SQLite.SQLiteDatabase) => {
-    return new Promise<Codes[]>((resolve, reject) => {
-        db.transaction(tx => {
-            tx.executeSql(
-                'SELECT * FROM codes;',
-                [],
-                (tx, results) => {
-                    const rows : Codes[] = [];
-                    for (let i = 0; i < results.rows.length; i++) {
-                        rows.push(results.rows.item(i));
-                    }
-                    resolve(rows);
-                },
-                error => reject(error)
-            );
-        });
-    });
-};
-
-// Function to close the database
-const closeDatabase = async (db: SQLite.SQLiteDatabase | undefined) => {
-    if (db) {
-        try {
-            await db.close();
-            console.log("Database closed.");
-        } catch (error) {
-            console.error("Error closing database:", error);
+        var date = new Date().toISOString();
+        if(!date){
+            date = "no date";
         }
-    }
-};
-
-// TODO remove when finished logging
-const logTableColumns = async (db: SQLite.SQLiteDatabase, tableName: string) => {
-    await new Promise<void>((resolve, reject) => {
-        db.transaction(tx => {
-            tx.executeSql(
-                `PRAGMA table_info(${tableName});`,
-                [],
-                (_, result) => {
-                    console.log(`Columns in ${tableName}:`);
-                    let rows = result.rows;
-                    for (let i = 0; i < rows.length; i++) {
-                        console.log(rows.item(i));
-                    }
-                    resolve();
-                },
-                error => {
-                    console.error(`Error fetching columns for table ${tableName}:`, error);
-                    reject(error);
-                }
-            );
+        
+        logTableColumns(db, 'codes');
+        
+        await new Promise<void>((resolve, reject) => {
+            db.transaction(tx => {
+                tx.executeSql(
+                    'INSERT INTO codes (reference, date, topic, title, subtitle, description, additional) VALUES (?, ?, ?, ?, ?, ?, ?);',
+                    [reference, date, topic, title, subtitle, description, additional],
+                    () => resolve(),
+                    error => reject(error)
+                );
+            });
         });
-    });
-};
-
-export { initializeDatabase, closeDatabase, addEntry, removeAllEntries, getAllEntries };
+    };
+    
+    const removeAllEntries = async (db: SQLite.SQLiteDatabase) => {
+        await new Promise<void>((resolve, reject) => {
+            db.transaction(tx => {
+                tx.executeSql(
+                    'DELETE FROM codes;',
+                    [],
+                    () => resolve(),
+                    error => reject(error)
+                );
+            });
+        });
+    };
+    
+    const getAllEntries = async (db: SQLite.SQLiteDatabase) => {
+        return new Promise<Codes[]>((resolve, reject) => {
+            db.transaction(tx => {
+                tx.executeSql(
+                    'SELECT * FROM codes;',
+                    [],
+                    (tx, results) => {
+                        const rows : Codes[] = [];
+                        for (let i = 0; i < results.rows.length; i++) {
+                            rows.push(results.rows.item(i));
+                        }
+                        resolve(rows);
+                    },
+                    error => reject(error)
+                );
+            });
+        });
+    };
+    
+    // Function to close the database
+    const closeDatabase = async (db: SQLite.SQLiteDatabase | undefined) => {
+        if (db) {
+            try {
+                await db.close();
+                console.log("Database closed.");
+            } catch (error) {
+                console.error("Error closing database:", error);
+            }
+        }
+    };
+    
+    // TODO remove when finished logging
+    const logTableColumns = async (db: SQLite.SQLiteDatabase, tableName: string) => {
+        await new Promise<void>((resolve, reject) => {
+            db.transaction(tx => {
+                tx.executeSql(
+                    `PRAGMA table_info(${tableName});`,
+                    [],
+                    (_, result) => {
+                        console.log(`Columns in ${tableName}:`);
+                        let rows = result.rows;
+                        for (let i = 0; i < rows.length; i++) {
+                            console.log(rows.item(i));
+                        }
+                        resolve();
+                    },
+                    error => {
+                        console.error(`Error fetching columns for table ${tableName}:`, error);
+                        reject(error);
+                    }
+                );
+            });
+        });
+    };
+    
+    export { initializeDatabase, closeDatabase, addEntry, removeAllEntries, getAllEntries };

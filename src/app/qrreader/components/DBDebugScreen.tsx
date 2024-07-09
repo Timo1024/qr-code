@@ -17,6 +17,7 @@ const { width, height } = Dimensions.get('window');
 // Define the User type
 interface Codes {
     id: number;
+    reference: string;
     date: string;
     topic: string;
     title: string;
@@ -59,6 +60,7 @@ const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
     
     const handleAddEntry = async () => {
         // make random strings
+        const reference : string = Math.random().toString(36).substring(7);
         const topic : string = Math.random().toString(36).substring(7);
         const title = Math.random().toString(36).substring(7);
         const subtitle = Math.random().toString(36).substring(7);
@@ -68,7 +70,7 @@ const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
         console.log({db});
         if (db) {
             try {
-                await addEntry(db, topic, title, subtitle, description, additional);
+                await addEntry(db, reference, topic, title, subtitle, description, additional);
                 loadEntries(db);
             } catch (error) {
                 console.error('Failed to add random entry:', error);
@@ -100,6 +102,7 @@ const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
         renderItem={({ item }) => (
             <View style={styles.item}>
                 <Text>ID: {item.id}</Text>
+                <Text>Reference: {item.reference}</Text>
                 <Text>Date: {item.date}</Text>
                 <Text>Topic: {item.topic}</Text>
                 <Text>Title: {item.title}</Text>
@@ -125,4 +128,4 @@ const styles = StyleSheet.create({
       borderBottomWidth: 1,
       borderBottomColor: '#ccc',
     },
-  });
+});
