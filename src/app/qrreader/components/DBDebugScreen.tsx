@@ -7,6 +7,8 @@ import { colors } from '../resources/constants/colors.json';
 import { NavigationProp, RouteProp } from '@react-navigation/native';
 import { SQLiteDatabase } from 'react-native-sqlite-storage';
 
+import QRItem from './QRItem';
+
 type DBDebugScreenProps = {
     navigation: NavigationProp<any>;
     route: RouteProp<any>;
@@ -60,12 +62,22 @@ const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
     
     const handleAddEntry = async () => {
         // make random strings
-        const reference : string = Math.random().toString(36).substring(7);
-        const topic : string = Math.random().toString(36).substring(7);
-        const title = Math.random().toString(36).substring(7);
-        const subtitle = Math.random().toString(36).substring(7);
-        const description = Math.random().toString(36).substring(7);
-        const additional = Math.random().toString(36).substring(7);
+        var   reference : string | null = Math.random().toString(36).substring(7);
+        const topic : string | null = Math.random().toString(36).substring(7);
+        const title : string | null = Math.random().toString(36).substring(7);
+        var   subtitle : string | null = Math.random().toString(36).substring(7);
+        const additional : string | null = Math.random().toString(36).substring(7);
+
+        // make random string of length 100
+        const description = generateRandomString(100);
+
+        // 50% of the time, there should be no reference
+        if(Math.random() > 0.5) {
+            reference = null;
+        }
+        if(Math.random() > 0.5) {
+            subtitle = null;
+        }
 
         console.log({db});
         if (db) {
@@ -100,16 +112,17 @@ const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
         data={codes}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-            <View style={styles.item}>
-                <Text>ID: {item.id}</Text>
-                <Text>Reference: {item.reference}</Text>
-                <Text>Date: {item.date}</Text>
-                <Text>Topic: {item.topic}</Text>
-                <Text>Title: {item.title}</Text>
-                <Text>Subtitle: {item.subtitle}</Text>
-                <Text>Description: {item.description}</Text>
-                <Text>Additional: {item.additional}</Text>
-            </View>
+            <QRItem data={item} />
+            // <View style={styles.item}>
+            //     <Text>ID: {item.id}</Text>
+            //     <Text>Reference: {item.reference}</Text>
+            //     <Text>Date: {item.date}</Text>
+            //     <Text>Topic: {item.topic}</Text>
+            //     <Text>Title: {item.title}</Text>
+            //     <Text>Subtitle: {item.subtitle}</Text>
+            //     <Text>Description: {item.description}</Text>
+            //     <Text>Additional: {item.additional}</Text>
+            // </View>
         )}
         />
         </View>
@@ -129,3 +142,22 @@ const styles = StyleSheet.create({
       borderBottomColor: '#ccc',
     },
 });
+
+// TODO remove when not used anymore
+function generateRandomString(length: number): string {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+function generateSemicolonDelimitedTextString(length: number): string {
+    var result = '';
+    for (let i = 0; i < length; i++) {
+        result += generateRandomString(10) + ';';
+    }
+    result += generateRandomString(10);
+    return result;
+}
