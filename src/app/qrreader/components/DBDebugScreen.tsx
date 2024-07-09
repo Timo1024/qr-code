@@ -26,6 +26,7 @@ interface Codes {
     subtitle: string;
     description: string;
     additional: string;
+    tags: string;
   }
 
 const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
@@ -70,6 +71,7 @@ const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
 
         // make random string of length 100
         const description = generateRandomString(100);
+        const tags = generateSemicolonDelimitedTextString(10);
 
         // 50% of the time, there should be no reference
         if(Math.random() > 0.5) {
@@ -82,7 +84,7 @@ const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
         console.log({db});
         if (db) {
             try {
-                await addEntry(db, reference, topic, title, subtitle, description, additional);
+                await addEntry(db, reference, topic, title, subtitle, description, additional, tags);
                 loadEntries(db);
             } catch (error) {
                 console.error('Failed to add random entry:', error);
@@ -154,8 +156,10 @@ function generateRandomString(length: number): string {
     return result;
 }
 function generateSemicolonDelimitedTextString(length: number): string {
+    // get random number from 0 to number
+    const randint = Math.floor(Math.random() * length);
     var result = '';
-    for (let i = 0; i < length; i++) {
+    for (let i = 0; i < randint; i++) {
         result += generateRandomString(10) + ';';
     }
     result += generateRandomString(10);

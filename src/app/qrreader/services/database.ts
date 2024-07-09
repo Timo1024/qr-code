@@ -16,6 +16,7 @@ interface Codes {
     subtitle: string;
     description: string;
     additional: string;
+    tags: string;
 }
 
 // Function to initialize the database
@@ -56,7 +57,7 @@ const initializeDatabase = async () => {
             await new Promise<void>((resolve, reject) => {
                 db.transaction(tx => {
                     tx.executeSql(
-                        'CREATE TABLE IF NOT EXISTS codes (id INTEGER PRIMARY KEY AUTOINCREMENT, reference TEXT, date TEXT NOT NULL, topic TEXT, title TEXT, subtitle TEXT, description TEXT NOT NULL, additional TEXT);',
+                        'CREATE TABLE IF NOT EXISTS codes (id INTEGER PRIMARY KEY AUTOINCREMENT, reference TEXT, date TEXT NOT NULL, topic TEXT, title TEXT, subtitle TEXT, description TEXT NOT NULL, additional TEXT, tags TEXT);',
                         [],
                         () => {
                             resolve();
@@ -82,7 +83,8 @@ const addEntry = async (
     title : string | null = null, 
     subtitle : string | null = null, 
     description : string = "no description", 
-    additional : string | null = null) => {
+    additional : string | null = null,
+    tags : string | null = null) => {
         var date = new Date().toISOString();
         if(!date){
             date = "no date";
@@ -93,8 +95,8 @@ const addEntry = async (
         await new Promise<void>((resolve, reject) => {
             db.transaction(tx => {
                 tx.executeSql(
-                    'INSERT INTO codes (reference, date, topic, title, subtitle, description, additional) VALUES (?, ?, ?, ?, ?, ?, ?);',
-                    [reference, date, topic, title, subtitle, description, additional],
+                    'INSERT INTO codes (reference, date, topic, title, subtitle, description, additional, tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?);',
+                    [reference, date, topic, title, subtitle, description, additional, tags],
                     () => resolve(),
                     error => reject(error)
                 );
