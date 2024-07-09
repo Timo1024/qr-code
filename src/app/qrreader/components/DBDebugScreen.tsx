@@ -8,6 +8,9 @@ import { NavigationProp, RouteProp } from '@react-navigation/native';
 import { SQLiteDatabase } from 'react-native-sqlite-storage';
 
 import QRItem from './QRItem';
+import DropdownMenu from './DropdownMenu';
+import { TextInput } from 'react-native-gesture-handler';
+
 
 type DBDebugScreenProps = {
     navigation: NavigationProp<any>;
@@ -103,20 +106,24 @@ const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
         }
     };
 
-    // console.log({codes});
+    console.log({codes});
     
     
     return (
         <View style={styles.container}>
-        <Button title="Add Random Entry" onPress={handleAddEntry} />
-        <Button title="Remove All Entries" onPress={handleRemoveAllEntries} />
-        <FlatList
-        data={codes}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-            <QRItem data={item} />
-        )}
-        />
+            <Button title="Add Random Entry" onPress={handleAddEntry} />
+            <Button title="Remove All Entries" onPress={handleRemoveAllEntries} />
+            <View style={styles.search}>
+                <DropdownMenu options={["Tags", "Topic", "Title", "Subtitle", "Content"]} />
+                <TextInput placeholder="Search" style={styles.textInput}/>
+            </View>
+            <FlatList
+                data={codes}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item }) => (
+                    <QRItem data={item} />
+                )}
+            />
         </View>
     );
 };
@@ -132,6 +139,24 @@ const styles = StyleSheet.create({
       padding: 8,
       borderBottomWidth: 1,
       borderBottomColor: '#ccc',
+    },
+    textInput: {
+        flex: 1,
+        padding: 10,
+    },
+    search: {
+        width: '95%',
+        alignSelf: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 10,
+        borderColor: 'gray',
+        borderWidth: 1,
+        borderRadius: 5,
+        zIndex: 997,
+        elevation: 998,
+        marginTop: 50,
     },
 });
 
