@@ -71,7 +71,7 @@ const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
 
         // make random string of length 100
         const description = generateRandomString(100);
-        const tags = generateSemicolonDelimitedTextString(10);
+        const tags = generateSemicolonDelimitedTextString(4);
 
         // 50% of the time, there should be no reference
         if(Math.random() > 0.5) {
@@ -115,16 +115,6 @@ const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
             <QRItem data={item} />
-            // <View style={styles.item}>
-            //     <Text>ID: {item.id}</Text>
-            //     <Text>Reference: {item.reference}</Text>
-            //     <Text>Date: {item.date}</Text>
-            //     <Text>Topic: {item.topic}</Text>
-            //     <Text>Title: {item.title}</Text>
-            //     <Text>Subtitle: {item.subtitle}</Text>
-            //     <Text>Description: {item.description}</Text>
-            //     <Text>Additional: {item.additional}</Text>
-            // </View>
         )}
         />
         </View>
