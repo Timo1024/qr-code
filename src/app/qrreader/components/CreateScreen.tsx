@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { RNCamera } from 'react-native-camera';
 import { StyleSheet, Text, TouchableOpacity, View, Dimensions, TextInput, FlatList, NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
 
@@ -15,6 +15,11 @@ import LinearGradient from 'react-native-linear-gradient';
 import { ScrollView } from 'react-native-gesture-handler';
 import { addEntry } from '../services/database';
 import { SQLiteDatabase } from 'react-native-sqlite-storage';
+import ViewShot, { captureRef } from 'react-native-view-shot';
+import RNFS from 'react-native-fs';
+import QRCode from 'react-native-qrcode-svg';
+import RNFetchBlob from 'rn-fetch-blob';
+import Share from 'react-native-share';
 
 type CreateScreenProps = {
     navigation: NavigationProp<any>;
@@ -31,6 +36,61 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
     const [description, setDescription] = useState('');
     const [tags, setTags] = useState<string[]>([]);
     const [input, setInput] = useState('');
+    const [QRtext, setQRtext] = useState<string | null>(null);
+    const [capture, setCapture] = useState(false);
+
+    const viewShotRef = useRef<ViewShot>(null);
+
+    // works!!!
+    // useEffect(() => {
+    //     if (capture && viewShotRef.current) {
+    //       const onCapture = async () => {
+    //         const uri = await viewShotRef.current?.capture?.();
+    //         const path = `${RNFetchBlob.fs.dirs.PictureDir}/QRCode/qrcode.png`;
+    //         if (uri) {
+    //           RNFetchBlob.fs.mkdir(`${RNFetchBlob.fs.dirs.PictureDir}/QRCode`)
+    //             .then(() => {
+    //               RNFetchBlob.fs.cp(uri, path)
+    //                 .then(success => console.log('FILE WRITTEN!', success))
+    //                 .catch(err => console.log(err.message));
+    //             })
+    //             .catch(err => console.log(err.message));
+    //         } else {
+    //           console.error('URI is undefined');
+    //         }
+    //       };
+    //       onCapture();
+    //       setCapture(false);
+    //     }
+    //   }, [capture]);
+
+    useEffect(() => {
+        if (capture && viewShotRef.current) {
+            const onCapture = async () => {
+                const uri = await viewShotRef.current?.capture?.();
+                const path = `${RNFetchBlob.fs.dirs.CacheDir}/qrcode.png`;
+                if (uri) {
+                    RNFetchBlob.fs.cp(uri, path)
+                    .then(success => {
+                        console.log('FILE WRITTEN!', success);
+                        let shareOptions = {
+                            title: "QR Code",
+                            url: `file://${path}`,
+                            type: 'image/png'
+                        };
+                        Share.open(shareOptions)
+                        .then((res) => console.log('res:', res))
+                        .catch(err => console.log('err', err));
+                    })
+                    .catch(err => console.log(err.message));
+                } else {
+                    console.error('URI is undefined');
+                }
+            };
+            onCapture();
+            setCapture(false);
+        }
+    }, [capture]);    
 
     const handlePress = (segment: React.SetStateAction<string>) => {
         setSelectedSegment(segment);
@@ -61,12 +121,18 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
         }
     };
 
-    const handleDownloadAndSave = () => {
+    const handleDownloadAndSave = async () => {
         // Create Database entry with date and description
         console.log('Saving in Database');
-        addEntry(db, null, null, null, null, description, null, tags.join(';'))
+
+        // create a unique reference for the entry starting with (^_^)
+        const reference = "(^_^)" + Date.now().toString() + Math.random().toString(36).substring(7);
+
+        setQRtext(reference)
+
+        addEntry(db, reference, null, null, null, description, null, tags.join(';'))
         .then(() => {
-            navigation.navigate("DBList")
+            // navigation.navigate("DBList")
             console.log('Entry added successfully');
         })
         .catch((error) => {
@@ -74,6 +140,11 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
         });
 
         // TODO Create QR-Code and save it to phone
+        setCapture(true)
+
+        console.log('QR-Code created');
+        
+
     };
 
     return (
@@ -131,6 +202,12 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
                         <Text style={styles.saveButtonText}>Download and Save</Text>
                     </TouchableOpacity>
                 </View>
+                <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1.0 }} style={{ position: 'absolute', top: -1000 }}>
+                    <QRCode
+                        value="Just some string value"
+                        size={200}
+                    />
+                </ViewShot>
             </View>
             <NavBar navigation={navigation} active={[false, false, true, false]}/>
         </View>
