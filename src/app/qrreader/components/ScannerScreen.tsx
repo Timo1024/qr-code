@@ -6,7 +6,6 @@ import { colors } from '../resources/constants/colors.json';
 
 import { NavigationProp, RouteProp } from '@react-navigation/native';
 
-import BackarrowSvgComponent from './svg_components/backarrow';
 import CancelSvgComponent from './svg_components/cancel';
 import LightOffSvgComponent from './svg_components/lightOff';
 import LightOnSvgComponent from './svg_components/lightOn';

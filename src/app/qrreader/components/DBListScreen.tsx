@@ -10,6 +10,12 @@ import { SQLiteDatabase } from 'react-native-sqlite-storage';
 import QRItem from './QRItem';
 import DropdownMenu from './DropdownMenu';
 import { TextInput } from 'react-native-gesture-handler';
+import Heading from './Heading';
+import TopBar from './TopBar';
+import NavBar from './NavBar';
+import JustQRSvgComponent from './svg_components/justQR';
+import BackarrowSvgComponent from './svg_components/backarrow';
+import ScanSvgComponent from './svg_components/scan';
 
 
 type DBDebugScreenProps = {
@@ -134,23 +140,36 @@ const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
     };    
     
     return (
-        <TouchableWithoutFeedback onPress={() => setIsOpen(false)}>
+        // <TouchableWithoutFeedback onPress={() => setIsOpen(false)}>
             <View style={styles.container}>
-                <Button title="Add Random Entry" onPress={handleAddEntry} />
-                <Button title="Remove All Entries" onPress={handleRemoveAllEntries} />
-                <View style={styles.search}>
-                    <DropdownMenu options={["All", "Tags", "Topic", "Title", "Subtitle", "Content"]} setIsOpen={setIsOpen} isOpen={isOpen} onChange={handleSearch} search={search} option={option} setOption={setOption} />
-                    <TextInput placeholder="Search" style={styles.textInput} onChangeText={handleSearchInput}/>
+                <TopBar title="Your QR-Codes" />
+                <View style={styles.content}>
+                    <View style={styles.search}>
+                        <DropdownMenu options={["All", "Tags", "Topic", "Title", "Subtitle", "Content"]} setIsOpen={setIsOpen} isOpen={isOpen} onChange={handleSearch} search={search} option={option} setOption={setOption} />
+                        <TextInput placeholder="Search" style={styles.textInput} onChangeText={handleSearchInput}/>
+                    </View>
+                    <View style={styles.list}>
+                    <FlatList
+                        data={codes}
+                        keyExtractor={(item) => item.id.toString()}
+                        renderItem={({ item }) => (
+                            <QRItem data={item} />
+                        )}
+                    />
+                    </View>
+                    {/* <Button title="Add Random Entry" onPress={handleAddEntry} />
+                    <Button title="Remove All Entries" onPress={handleRemoveAllEntries} /> */}
                 </View>
-                <FlatList
-                    data={codes}
-                    keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item }) => (
-                        <QRItem data={item} />
-                    )}
+                <NavBar 
+                    navigation={navigation} 
+                    svgComponent={[JustQRSvgComponent, BackarrowSvgComponent, ScanSvgComponent]} 
+                    destination={["Title", "Title", "Scanner"]} 
+                    text={["Create", "Back", "Scan"]} 
+                    fill={[false, false, false]} 
+                    color={[colors.accent, colors.accent, colors.accent]} 
                 />
             </View>
-        </TouchableWithoutFeedback>
+        // </TouchableWithoutFeedback>
     );
 };
 
@@ -158,13 +177,25 @@ export default DBDebugScreen;
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      padding: 16,
+        display: 'flex',
+        flexDirection: 'column',
+        flex: 1,
+        // padding: 16,
+    },
+    content: {
+        flex: 1,
+        width: '100%',
+        // backgroundColor: "pink",
+    },
+    list: {
+        flex: 1,
+        width: '100%',
+        // backgroundColor: "lightblue",
     },
     item: {
-      padding: 8,
-      borderBottomWidth: 1,
-      borderBottomColor: '#ccc',
+        padding: 8,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
     },
     textInput: {
         flex: 1,
@@ -182,7 +213,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         zIndex: 997,
         elevation: 998,
-        marginTop: 50,
+        marginTop: 10,
     },
 });
 
