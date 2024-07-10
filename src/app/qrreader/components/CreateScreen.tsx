@@ -1,14 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { RNCamera } from 'react-native-camera';
-import { StyleSheet, Text, TouchableOpacity, View, Dimensions, TextInput, FlatList, NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Dimensions, TextInput, FlatList, NativeSyntheticEvent, TextInputKeyPressEventData, Alert } from 'react-native';
 
 import { colors } from '../resources/constants/colors.json';
 
-import { NavigationProp, RouteProp } from '@react-navigation/native';
+import { NavigationProp, RouteProp, useFocusEffect } from '@react-navigation/native';
 
-import CancelSvgComponent from './svg_components/cancel';
-import LightOffSvgComponent from './svg_components/lightOff';
-import LightOnSvgComponent from './svg_components/lightOn';
 import NavBar from './NavBar';
 import TopBar from './TopBar';
 import LinearGradient from 'react-native-linear-gradient';
@@ -20,6 +17,11 @@ import RNFS from 'react-native-fs';
 import QRCode from 'react-native-qrcode-svg';
 import RNFetchBlob from 'rn-fetch-blob';
 import Share from 'react-native-share';
+
+import ShareSvgComponent from './svg_components/share';
+import DownloadSvgComponent from './svg_components/download';
+import HomeSvgComponent from './svg_components/home';
+import JustQRSvgComponent from './svg_components/justQR';
 
 type CreateScreenProps = {
     navigation: NavigationProp<any>;
@@ -33,39 +35,69 @@ const { width, height } = Dimensions.get('window');
 const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
 
     const [selectedSegment, setSelectedSegment] = useState('Free Text');
-    const [description, setDescription] = useState('');
-    const [tags, setTags] = useState<string[]>([]);
     const [input, setInput] = useState('');
     const [QRtext, setQRtext] = useState<string | null>(null);
     const [capture, setCapture] = useState(false);
+    const [saved, setSaved] = useState(false);
+    const [share, setShare] = useState(false);
+    const [download, setDownload] = useState(false);
+
+    const [description, setDescription] = useState('');
+    const [tags, setTags] = useState<string[]>([]);
 
     const viewShotRef = useRef<ViewShot>(null);
 
-    // works!!!
-    // useEffect(() => {
-    //     if (capture && viewShotRef.current) {
-    //       const onCapture = async () => {
-    //         const uri = await viewShotRef.current?.capture?.();
-    //         const path = `${RNFetchBlob.fs.dirs.PictureDir}/QRCode/qrcode.png`;
-    //         if (uri) {
-    //           RNFetchBlob.fs.mkdir(`${RNFetchBlob.fs.dirs.PictureDir}/QRCode`)
-    //             .then(() => {
-    //               RNFetchBlob.fs.cp(uri, path)
-    //                 .then(success => console.log('FILE WRITTEN!', success))
-    //                 .catch(err => console.log(err.message));
-    //             })
-    //             .catch(err => console.log(err.message));
-    //         } else {
-    //           console.error('URI is undefined');
-    //         }
-    //       };
-    //       onCapture();
-    //       setCapture(false);
-    //     }
-    //   }, [capture]);
+    useEffect(() => {
+        console.log({download});
+        
+        if (download && viewShotRef.current) {
+            const onCapture = async () => {
+                const uri = await viewShotRef.current?.capture?.();
+                const timestamp = Date.now();
+                const directoryPath = `${RNFetchBlob.fs.dirs.PictureDir}/QRCode`;
+                const filePath = `${directoryPath}/qrcode_${timestamp}.png`;
+                if (uri) {
+                RNFetchBlob.fs.exists(directoryPath)
+                    .then((exists) => {
+                    if (!exists) {
+                        RNFetchBlob.fs.mkdir(directoryPath)
+                        .then(() => {
+                            console.log('Directory created');
+                            copyFile(uri, filePath);
+                        })
+                        .catch(err => console.log('Directory creation error:', err.message));
+                    } else {
+                        console.log('Directory already exists');
+                        copyFile(uri, filePath);
+                    }
+                    })
+                    .catch(err => console.log('Error checking directory:', err.message));
+                } else {
+                console.error('URI is undefined');
+                }
+            };
+            onCapture();
+            setDownload(false);
+        }
+    }, [download]);
+
+    const copyFile = (uri: string, path: string) => {
+        RNFetchBlob.fs.cp(uri, path)
+        .then(() => {
+            console.log('FILE WRITTEN!');
+            Alert.alert(
+                'QR Code Saved',
+                'Your QR code has been successfully saved in the Pictures > QRCode folder.',
+                [{ text: 'OK' }]
+            );
+        })
+        .catch(err => console.log('Error copying file:', err.message));
+    };
 
     useEffect(() => {
-        if (capture && viewShotRef.current) {
+        console.log({share});
+        
+        if (share && viewShotRef.current) {
             const onCapture = async () => {
                 const uri = await viewShotRef.current?.capture?.();
                 const path = `${RNFetchBlob.fs.dirs.CacheDir}/qrcode.png`;
@@ -88,9 +120,23 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
                 }
             };
             onCapture();
-            setCapture(false);
+            setShare(false);
         }
-    }, [capture]);    
+    }, [share]);   
+    
+    useFocusEffect(
+        React.useCallback(() => {
+            // Code to run when the screen is focused
+            setSaved(false);
+            setDescription('');
+            setTags([]);
+
+            // Optional: Return a function to run when the screen loses focus
+            return () => {
+                // console.log('Screen is unfocused');
+            };
+        }, [])
+    );
 
     const handlePress = (segment: React.SetStateAction<string>) => {
         setSelectedSegment(segment);
@@ -130,6 +176,7 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
 
         setQRtext(reference)
 
+        // TODO uncomment
         addEntry(db, reference, null, null, null, description, null, tags.join(';'))
         .then(() => {
             // navigation.navigate("DBList")
@@ -140,7 +187,8 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
         });
 
         // TODO Create QR-Code and save it to phone
-        setCapture(true)
+        // setCapture(true)
+        setSaved(true)
 
         console.log('QR-Code created');
         
@@ -150,65 +198,136 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
     return (
         <View style={styles.container}>
             <TopBar title="Create QR-Code" />
-            <View style={styles.main}>
-                <View style={styles.switchContainer}>
-                    <TouchableOpacity onPress={() => handlePress('Free Text')} style={selectedSegment === 'Free Text' ? styles.selectedLeft : styles.unselectedLeft}>
-                        <Text style={selectedSegment === 'Free Text' ? styles.textSelected : styles.textUnselected}>Free Text</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handlePress('Structured Input')} style={selectedSegment === 'Structured Input' ? styles.selectedRight : styles.unselectedRight}>
-                        <Text style={selectedSegment === 'Structured Input' ? styles.textSelected : styles.textUnselected}>Structured Input</Text>
-                    </TouchableOpacity>
+            {!saved &&
+                <View style={styles.main}>
+                    <View style={styles.switchContainer}>
+                        <TouchableOpacity onPress={() => handlePress('Free Text')} style={selectedSegment === 'Free Text' ? styles.selectedLeft : styles.unselectedLeft}>
+                            <Text style={selectedSegment === 'Free Text' ? styles.textSelected : styles.textUnselected}>Free Text</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => handlePress('Structured Input')} style={selectedSegment === 'Structured Input' ? styles.selectedRight : styles.unselectedRight}>
+                            <Text style={selectedSegment === 'Structured Input' ? styles.textSelected : styles.textUnselected}>Structured Input</Text>
+                        </TouchableOpacity>
+                    </View>
+                    { selectedSegment === 'Free Text' &&
+                        <ScrollView contentContainerStyle={styles.wrapper} >
+                            <View style={styles.inputContainer}>
+                                <TextInput
+                                    style={styles.input}
+                                    onChangeText={setDescription}
+                                    value={description}
+                                    multiline={true}
+                                    placeholder="Write your text or url here"
+                                    placeholderTextColor="#888"
+                                />
+                            </View>
+                            <View style={styles.tagsWrapper}>
+                                {tags.map((tag, index) => (
+                                    <Text key={index} style={styles.tag}>
+                                    {tag}
+                                    </Text>
+                                ))}
+                                <TextInput
+                                    style={styles.tagsInput}
+                                    onChangeText={handleInputChange}
+                                    onKeyPress={handleKeyPress}
+                                    value={input}
+                                    placeholder={tags.length === 0 ? "Add tag by pressing spacebar" : ""}
+                                    placeholderTextColor="#888"
+                                />
+                            </View>
+                        </ScrollView>
+                    }
+                    { selectedSegment === 'Structured Input' &&
+                        <ScrollView contentContainerStyle={styles.wrapper} >
+                            <Text>Struct Text</Text>
+                        </ScrollView>
+                    }
+                    <View style={styles.saveButtonsWrapper}>
+                        <TouchableOpacity 
+                            style={[styles.saveButton, description.trim() == "" && styles.disabledSaveButton]} 
+                            onPress={description.trim() != "" ? handleDownloadAndSave : undefined}
+                            disabled={description.trim() == ""}
+                        >
+                            <Text style={styles.saveButtonText}>Download and Save</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1.0 }} style={{ position: 'absolute', top: -1000 }}>
+                        <QRCode
+                            value={QRtext ?? 'no text provided'}
+                            size={200}
+                        />
+                    </ViewShot>
                 </View>
-                { selectedSegment === 'Free Text' &&
-                    <ScrollView contentContainerStyle={styles.wrapper} >
-                        <View style={styles.inputContainer}>
-                            <TextInput
-                                style={styles.input}
-                                onChangeText={setDescription}
-                                value={description}
-                                multiline={true}
-                                placeholder="Write your text or url here"
-                                placeholderTextColor="#888"
-                            />
+            }
+            { saved &&
+            // TODO show QR-Code
+            // TODO create new QR-code button
+            // TODO download button
+            // TODO share button
+            // TODO back to home button
+                <View style={styles.main}>
+
+                    {/* <View style={styles.qrCreated}>
+                        <Text style={styles.qrCreatedText}>QR-Code created</Text>
+                    </View> */}
+
+                    <View style={styles.showQR}>
+                        <QRCode
+                            value={QRtext ?? ''}
+                            size={width * 0.6}
+                            color={colors.text}
+                            backgroundColor={colors.primary}
+                        />
+                    </View>
+
+                    <View style={styles.saveButtonWrapper}>
+                        <View style={styles.saveButtons}>
+                            <TouchableOpacity
+                                style={styles.buttonPrimary}
+                                onPress={() => setShare(true)}
+                            >
+                                <ShareSvgComponent color={colors.secondary} height={24} width={24} />
+                                <Text style={styles.textPrimary}>Share</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.buttonPrimary}
+                                onPress={() => setDownload(true)}
+                            >
+                                <DownloadSvgComponent color={colors.secondary} height={24} width={24} />
+                                <Text style={styles.textPrimary}>Download</Text>
+                            </TouchableOpacity>
                         </View>
-                        <View style={styles.tagsWrapper}>
-                            {tags.map((tag, index) => (
-                                <Text key={index} style={styles.tag}>
-                                {tag}
-                                </Text>
-                            ))}
-                            <TextInput
-                                style={styles.tagsInput}
-                                onChangeText={handleInputChange}
-                                onKeyPress={handleKeyPress}
-                                value={input}
-                                placeholder={tags.length === 0 ? "Add tag by pressing spacebar" : ""}
-                                placeholderTextColor="#888"
-                            />
+                        <View style={styles.continueButtons}>
+                            <TouchableOpacity 
+                                style={styles.buttonSecondary} 
+                                onPress={() => navigation.navigate("Title")}
+                            >
+                                <HomeSvgComponent color={colors.accent} height={24} width={24} />
+                                <Text style={styles.textSecondary}>Back to Home</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.buttonSecondary}
+                                onPress={() => {
+                                    setSaved(false);
+                                    setDescription('');
+                                    setTags([]);
+                                }}
+                            >
+                                <JustQRSvgComponent color={colors.accent} height={24} width={24} />
+                                <Text style={styles.textSecondary}>Create new QR-Code</Text>
+                            </TouchableOpacity>
                         </View>
-                    </ScrollView>
-                }
-                { selectedSegment === 'Structured Input' &&
-                    <ScrollView contentContainerStyle={styles.wrapper} >
-                        <Text>Struct Text</Text>
-                    </ScrollView>
-                }
-                <View style={styles.saveButtonWrapper}>
-                    <TouchableOpacity 
-                        style={[styles.saveButton, description.trim() == "" && styles.disabledSaveButton]} 
-                        onPress={description.trim() != "" ? handleDownloadAndSave : undefined}
-                        disabled={description.trim() == ""}
-                    >
-                        <Text style={styles.saveButtonText}>Download and Save</Text>
-                    </TouchableOpacity>
-                </View>
-                <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1.0 }} style={{ position: 'absolute', top: -1000 }}>
-                    <QRCode
-                        value="Just some string value"
-                        size={200}
-                    />
-                </ViewShot>
-            </View>
+                    </View>
+
+                    <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1.0 }} style={{ position: 'absolute', top: -1000 }}>
+                        <QRCode
+                            value={QRtext ?? 'no text provided'}
+                            size={200}
+                        />
+                    </ViewShot>
+
+                </View>                
+            }
             <NavBar navigation={navigation} active={[false, false, true, false]}/>
         </View>
     );
@@ -229,7 +348,7 @@ const styles = StyleSheet.create({
         alignItems: 'stretch',
         // backgroundColor: "red",
         padding: 30,
-        paddingBottom: 50,
+        paddingBottom: 0,
     },
     switchContainer: {
         flexDirection: 'row',
@@ -314,7 +433,7 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         width: '100%',
     },
-    saveButtonWrapper: {
+    saveButtonsWrapper: {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -375,5 +494,86 @@ const styles = StyleSheet.create({
         // paddingLeft: 0,
         // borderColor: 'gray', 
         // borderWidth: 1 
-    }
+    },
+    
+    // buttons on finished screen
+    qrCreated: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingTop: 20,
+    },
+    qrCreatedText: {
+        color: colors.text,
+        fontSize: 24,
+        fontWeight: '400',
+    },
+    showQR: {
+        // flex: 1,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        // backgroundColor: "pink",
+        margin: 20,
+        marginBottom: 40,
+    },
+    saveButtonWrapper: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingTop: 20,
+        // backgroundColor: "blue"
+    },
+    saveButtons: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '100%',
+        marginBottom: 20,
+    },
+    buttonPrimary: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.accent,
+        padding: 10,
+        borderRadius: 5,
+        width: '45%',
+    },
+    buttonSecondary: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 10,
+        margin: 10,
+        borderRadius: 5,
+        width: '100%',
+        borderColor: colors.accent,
+        borderWidth: 1,
+    },
+    textPrimary: {
+        color: colors.secondary,
+        fontSize: 16,
+        fontWeight: "400",
+        textAlign: 'center',
+        marginLeft: 10,
+    },
+    textSecondary: {
+        color: colors.accent,
+        fontSize: 16,
+        fontWeight: "400",
+        textAlign: 'center',
+        marginLeft: 10,
+    },
+    continueButtons: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+        marginBottom: 20,
+        // backgroundColor: "pink",
+    },
 });
