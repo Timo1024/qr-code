@@ -15,7 +15,8 @@ import {
   StyleSheet,
   Text,
   useColorScheme,
-  View
+  View,
+  Easing
 } from 'react-native';
 
 import {
@@ -31,7 +32,7 @@ import { initializeDatabase, closeDatabase } from './services/database';
 
 import CameraComponent from './components/CameraComponent';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { CardStyleInterpolators, createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import TitleScreen from './components/TitleScreen';
 import ScannerScreen from './components/ScannerScreen';
 import DBDebugScreen from './components/DBListScreen';
@@ -75,7 +76,30 @@ function App(): React.JSX.Element {
       },
     }}>
       <StatusBar backgroundColor={colors.secondary} barStyle="light-content" />
-      <Stack.Navigator initialRouteName="Title" >
+      <Stack.Navigator 
+        initialRouteName="Title"
+        screenOptions={{
+          gestureEnabled: true,
+          ...TransitionPresets.ScaleFromCenterAndroid, // This is one of the predefined animations
+          transitionSpec: {
+            open: {
+              animation: 'timing',
+              config: {
+                duration: 300,
+                easing: Easing.linear
+              },
+            },
+            close: {
+              animation: 'timing',
+              config: {
+                duration: 300,
+                easing: Easing.linear
+              },
+            },
+          },
+          // cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS, // This is for the card style
+        }}
+      >
         <Stack.Screen name="Title" component={TitleScreen} options={{headerShown: false}} />
         <Stack.Screen name="Scanner" component={ScannerScreen} options={{headerShown: false}} />
         <Stack.Screen name="DBList" component={DBDebugScreen} options={{headerShown: false}} />

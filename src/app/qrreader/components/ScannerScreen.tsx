@@ -9,6 +9,7 @@ import { NavigationProp, RouteProp } from '@react-navigation/native';
 import CancelSvgComponent from './svg_components/cancel';
 import LightOffSvgComponent from './svg_components/lightOff';
 import LightOnSvgComponent from './svg_components/lightOn';
+import NavBar from './NavBar';
 
 type ScannerScreenProps = {
   navigation: NavigationProp<any>;
@@ -71,6 +72,7 @@ const ScannerScreen = ({ navigation, route }: ScannerScreenProps) => {
           </View>
         </View>
       </View>
+      <NavBar navigation={navigation} active={[false, true, false, false]}/>
     </View>
   );
 };
