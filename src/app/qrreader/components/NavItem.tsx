@@ -12,10 +12,13 @@ type NavItemProps = {
     destination: string;
     text: string;
     fill: boolean;
-    color: string;
 };
 
-const NavItem = ({ navigation, svgComponent, destination = "Title", text = "", fill = false, color = colors.secondary }: NavItemProps) => {
+const NavItem = ({ navigation, svgComponent, destination = "Title", text = "", fill = false }: NavItemProps) => {
+
+    var color = colors.accent;
+    if(fill) color = colors.secondary;
+
     if(!fill) {
         return (
             <View style={{...styles.button_view}}>
@@ -46,16 +49,19 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     button_main_fill : {
-        backgroundColor: colors.primary,
+        backgroundColor: colors.accent,
     },
     button_main : {
         alignItems: 'center',
         borderRadius: 5,
-        width: '50%',
+        width: '80%',
         alignSelf: 'center',
+        padding: 10,
+
     },
     button_text : {
         fontSize: 12,
         marginTop: 10,
+        textAlign: 'center',
     }
 });

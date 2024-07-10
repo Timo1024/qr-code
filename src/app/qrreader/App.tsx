@@ -38,6 +38,7 @@ import DBDebugScreen from './components/DBListScreen';
 
 // import resources
 import { colors } from './resources/constants/colors.json';
+import NavBar from './components/NavBar';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -47,19 +48,19 @@ const Stack = createStackNavigator();
 
 function App(): React.JSX.Element {
 
-  useEffect(() => {
-    let db: SQLite.SQLiteDatabase | undefined;
+  // useEffect(() => {
+  //   let db: SQLite.SQLiteDatabase | undefined;
 
-    const setupDatabase = async () => {
-      db = await initializeDatabase();
-    };
+  //   const setupDatabase = async () => {
+  //     db = await initializeDatabase();
+  //   };
 
-    setupDatabase();
+  //   setupDatabase();
 
-    return () => {
-      closeDatabase(db);
-    };
-  }, []);
+  //   return () => {
+  //     closeDatabase(db);
+  //   };
+  // }, []);
 
   return (
     <NavigationContainer theme={{

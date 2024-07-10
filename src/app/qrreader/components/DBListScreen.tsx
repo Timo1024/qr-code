@@ -13,9 +13,6 @@ import { TextInput } from 'react-native-gesture-handler';
 import Heading from './Heading';
 import TopBar from './TopBar';
 import NavBar from './NavBar';
-import JustQRSvgComponent from './svg_components/justQR';
-import BackarrowSvgComponent from './svg_components/backarrow';
-import ScanSvgComponent from './svg_components/scan';
 
 
 type DBDebugScreenProps = {
@@ -157,17 +154,10 @@ const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
                         )}
                     />
                     </View>
-                    {/* <Button title="Add Random Entry" onPress={handleAddEntry} />
-                    <Button title="Remove All Entries" onPress={handleRemoveAllEntries} /> */}
+                    <Button title="Add Random Entry" onPress={handleAddEntry} />
+                    <Button title="Remove All Entries" onPress={handleRemoveAllEntries} />
                 </View>
-                <NavBar 
-                    navigation={navigation} 
-                    svgComponent={[JustQRSvgComponent, BackarrowSvgComponent, ScanSvgComponent]} 
-                    destination={["Title", "Title", "Scanner"]} 
-                    text={["Create", "Back", "Scan"]} 
-                    fill={[false, false, false]} 
-                    color={[colors.accent, colors.accent, colors.accent]} 
-                />
+                <NavBar navigation={navigation} active={[false, false, false, true]}/>
             </View>
         // </TouchableWithoutFeedback>
     );
