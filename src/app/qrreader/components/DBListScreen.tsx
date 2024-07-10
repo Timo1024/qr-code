@@ -155,26 +155,27 @@ const DBDebugScreen: React.FC<DBDebugScreenProps> = ({ navigation, route, db, se
     return (
         // <TouchableWithoutFeedback onPress={() => setIsOpen(false)}>
             <View style={styles.container}>
-                <TopBar title="My QR-Codes" />
-                <View style={styles.content}>
-                    <View style={styles.search}>
-                        <DropdownMenu options={["All", "Tags", "Topic", "Title", "Subtitle", "Content"]} setIsOpen={setIsOpen} isOpen={isOpen} onChange={handleSearch} search={search} option={option} setOption={setOption} />
-                        <TextInput placeholder="Search" style={styles.textInput} onChangeText={handleSearchInput}/>
-                    </View>
-                    <View style={styles.list}>
-                    <FlatList
-                        data={codes}
-                        keyExtractor={(item) => item.id.toString()}
-                        renderItem={({ item }) => (
-                            <QRItem data={item} />
-                        )}
-                    />
-                    </View>
-                    {/* <Button title="Add Random Entry" onPress={handleAddEntry} />
-                    <Button title="Remove All Entries" onPress={handleRemoveAllEntries} /> */}
+            <TopBar title="My QR-Codes" />
+            <View style={styles.content}>
+                <View style={styles.search}>
+                <DropdownMenu options={["All", "Tags", "Topic", "Title", "Subtitle", "Content"]} setIsOpen={setIsOpen} isOpen={isOpen} onChange={handleSearch} search={search} option={option} setOption={setOption} />
+                <TextInput placeholder="Search" style={styles.textInput} onChangeText={handleSearchInput}/>
                 </View>
-                <NavBar navigation={navigation} active={[false, false, false, true]}/>
+                <View style={styles.list}>
+                <FlatList
+                    data={codes.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())}
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={({ item }) => (
+                    <QRItem data={item} />
+                    )}
+                />
+                </View>
+                {/* <Button title="Add Random Entry" onPress={handleAddEntry} />
+                <Button title="Remove All Entries" onPress={handleRemoveAllEntries} /> */}
             </View>
+            <NavBar navigation={navigation} active={[false, false, false, true]}/>
+            </View>
+        // </TouchableWithoutFeedback>}
         // </TouchableWithoutFeedback>
     );
 };
