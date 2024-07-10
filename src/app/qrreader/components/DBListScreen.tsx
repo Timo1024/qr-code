@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, Button, FlatList, StyleSheet, Dimensions, TouchableWithoutFeedback } from 'react-native';
 import { initializeDatabase, addEntry, removeAllEntries, getAllEntries, getFilteredEntries } from '../services/database';
 
 import { colors } from '../resources/constants/colors.json';
 
-import { NavigationProp, RouteProp } from '@react-navigation/native';
+import { NavigationProp, RouteProp, useFocusEffect } from '@react-navigation/native';
 import { SQLiteDatabase } from 'react-native-sqlite-storage';
 
 import QRItem from './QRItem';
@@ -15,10 +15,17 @@ import TopBar from './TopBar';
 import NavBar from './NavBar';
 
 
-type DBDebugScreenProps = {
-    navigation: NavigationProp<any>;
-    route: RouteProp<any>;
-};
+// type DBDebugScreenProps = {
+//     navigation: NavigationProp<any>;
+//     route: RouteProp<any>;
+// };
+
+interface DBDebugScreenProps {
+    navigation: any; // Define more specific types as needed
+    route: any; // Define more specific types as needed
+    db: SQLiteDatabase;
+    setDb: (db: SQLiteDatabase) => void;
+}
 
 const { width, height } = Dimensions.get('window');
 
@@ -33,37 +40,46 @@ interface Codes {
     description: string;
     additional: string;
     tags: string;
-  }
+}
 
-const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
+const DBDebugScreen: React.FC<DBDebugScreenProps> = ({ navigation, route, db, setDb }) => {
     
-    const [db, setDb] = useState<SQLiteDatabase | null>(null);
     const [codes, setCodes] = useState<Codes[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const [option, setOption] = useState<string>("all");
     const [search, setSearch] = useState<string>("");
     
-    useEffect(() => {        
-        const setupDatabase = async () => {
-            try {
-                const database = await initializeDatabase();
-                console.log({database});
+    // useEffect(() => {        
+    //     const setupDatabase = async () => {
+    //         try {
+    //             const database = await initializeDatabase();
+    //             console.log({database});
                 
-                if(database){
-                    setDb(database);
-                    loadEntries(database);
-                }
-            } catch (error) {
-                console.error('Failed to initialize database:', error);
-            }
-        };
+    //             if(database){
+    //                 setDb(database);
+    //                 loadEntries(database);
+    //             }
+    //         } catch (error) {
+    //             console.error('Failed to initialize database:', error);
+    //         }
+    //     };
         
-        setupDatabase();
-    }, []);
+    //     setupDatabase();
+    // }, []);
 
     useEffect(() => {
         handleSearch();
     }, [search]);
+    useFocusEffect(
+        useCallback(() => {
+            console.log("It was navigated to DBDebugScreen");
+            loadEntries(db);
+            // Optional cleanup function
+            return () => {
+                // Cleanup code if needed
+            };
+        }, [db]) // Dependencies for useCallback
+    );
     
     const loadEntries = async (database: SQLiteDatabase) => {
         try {

@@ -5,7 +5,7 @@
  * @format
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import type {PropsWithChildren} from 'react';
 import {
@@ -26,12 +26,12 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-import SQLite from 'react-native-sqlite-storage';
+import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
 
-import { initializeDatabase, closeDatabase } from './services/database';
+import { initializeDatabase, closeDatabase, getAllEntries } from './services/database';
 
 import CameraComponent from './components/CameraComponent';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, NavigationProp, RouteProp } from '@react-navigation/native';
 import { CardStyleInterpolators, createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import TitleScreen from './components/TitleScreen';
 import ScannerScreen from './components/ScannerScreen';
@@ -46,9 +46,55 @@ type SectionProps = PropsWithChildren<{
   title: string;
 }>;
 
+interface Codes {
+  id: number;
+  reference: string;
+  date: string;
+  topic: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  additional: string;
+  tags: string;
+}
+
 const Stack = createStackNavigator();
 
 function App(): React.JSX.Element {
+
+  const [db, setDb] = useState<SQLiteDatabase | null>(null);
+
+  // const loadEntries = async (database: SQLiteDatabase) => {
+  //     try {
+  //         const entries : Codes[] = await getAllEntries(database);
+  //         setCodes(entries);
+  //     } catch (error) {
+  //         console.error('Failed to load entries:', error);
+  //     }
+  // };
+
+  function withDatabase(Component: React.ComponentType<any>) {
+    // Assuming db and setDb are available in this scope
+    return (props: React.PropsWithChildren<any>) => <Component {...props} db={db} setDb={setDb} />;
+  }
+
+  useEffect(() => {        
+    const setupDatabase = async () => {
+        try {
+            const database = await initializeDatabase();
+            console.log({database});
+            
+            if(database){
+                setDb(database);
+                // loadEntries(database);
+            }
+        } catch (error) {
+            console.error('Failed to initialize database:', error);
+        }
+    };
+    
+    setupDatabase();
+}, []);
 
   // useEffect(() => {
   //   let db: SQLite.SQLiteDatabase | undefined;
@@ -103,8 +149,8 @@ function App(): React.JSX.Element {
       >
         <Stack.Screen name="Title" component={TitleScreen} options={{headerShown: false}} />
         <Stack.Screen name="Scanner" component={ScannerScreen} options={{headerShown: false}} />
-        <Stack.Screen name="Create" component={CreateScreen} options={{headerShown: false}} />
-        <Stack.Screen name="DBList" component={DBDebugScreen} options={{headerShown: false}} />
+        <Stack.Screen name="Create" component={withDatabase(CreateScreen)} options={{headerShown: false}} />
+        <Stack.Screen name="DBList" component={withDatabase(DBDebugScreen)} options={{headerShown: false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );

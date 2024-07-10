@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { RNCamera } from 'react-native-camera';
-import { StyleSheet, Text, TouchableOpacity, View, Dimensions, TextInput } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Dimensions, TextInput, FlatList, NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
 
 import { colors } from '../resources/constants/colors.json';
 
@@ -13,21 +13,67 @@ import NavBar from './NavBar';
 import TopBar from './TopBar';
 import LinearGradient from 'react-native-linear-gradient';
 import { ScrollView } from 'react-native-gesture-handler';
+import { addEntry } from '../services/database';
+import { SQLiteDatabase } from 'react-native-sqlite-storage';
 
 type CreateScreenProps = {
-  navigation: NavigationProp<any>;
-  route: RouteProp<any>;
+    navigation: NavigationProp<any>;
+    route: RouteProp<any>;
+    db: SQLiteDatabase;
+    setDb: (db: SQLiteDatabase) => void;
 };
 
 const { width, height } = Dimensions.get('window');
 
-const CreateScreen = ({ navigation, route }: CreateScreenProps) => {
+const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
 
     const [selectedSegment, setSelectedSegment] = useState('Free Text');
     const [description, setDescription] = useState('');
+    const [tags, setTags] = useState<string[]>([]);
+    const [input, setInput] = useState('');
 
     const handlePress = (segment: React.SetStateAction<string>) => {
         setSelectedSegment(segment);
+    };
+
+    const handleInputChange = (text: string) => {
+        // If the user typed a space, add the current input as a new tag
+        if (text.endsWith(' ')) {
+            setTags([...tags, input.trim()]);
+            setInput('');
+        } else if (input === '' && text === '' && tags.length > 0) {
+            // If the user pressed backspace and the input is empty, remove the last tag and append it to the input
+            const newTags = [...tags];
+            const removedTag = newTags.pop();
+            setTags(newTags);
+            setInput(removedTag || ''); // Provide a default value of an empty string if removedTag is undefined
+        } else {
+            setInput(text);
+        }
+    };
+
+    const handleKeyPress = ({ nativeEvent }: NativeSyntheticEvent<TextInputKeyPressEventData>) => {
+        if ((nativeEvent as unknown as React.KeyboardEvent<HTMLInputElement>).key === 'Backspace' && input === '' && tags.length > 0) {
+            const newTags = [...tags];
+            const removedTag = newTags.pop();
+            setTags(newTags);
+            // setInput(removedTag || ''); // Provide a default value of an empty string if removedTag is undefined
+        }
+    };
+
+    const handleDownloadAndSave = () => {
+        // Create Database entry with date and description
+        console.log('Saving in Database');
+        addEntry(db, null, null, null, null, description, null, tags.join(';'))
+        .then(() => {
+            navigation.navigate("DBList")
+            console.log('Entry added successfully');
+        })
+        .catch((error) => {
+            console.error('Error adding entry:', error);
+        });
+
+        // TODO Create QR-Code and save it to phone
     };
 
     return (
@@ -54,6 +100,21 @@ const CreateScreen = ({ navigation, route }: CreateScreenProps) => {
                                 placeholderTextColor="#888"
                             />
                         </View>
+                        <View style={styles.tagsWrapper}>
+                            {tags.map((tag, index) => (
+                                <Text key={index} style={styles.tag}>
+                                {tag}
+                                </Text>
+                            ))}
+                            <TextInput
+                                style={styles.tagsInput}
+                                onChangeText={handleInputChange}
+                                onKeyPress={handleKeyPress}
+                                value={input}
+                                placeholder={tags.length === 0 ? "Add tag by pressing spacebar" : ""}
+                                placeholderTextColor="#888"
+                            />
+                        </View>
                     </ScrollView>
                 }
                 { selectedSegment === 'Structured Input' &&
@@ -61,6 +122,15 @@ const CreateScreen = ({ navigation, route }: CreateScreenProps) => {
                         <Text>Struct Text</Text>
                     </ScrollView>
                 }
+                <View style={styles.saveButtonWrapper}>
+                    <TouchableOpacity 
+                        style={[styles.saveButton, description.trim() == "" && styles.disabledSaveButton]} 
+                        onPress={description.trim() != "" ? handleDownloadAndSave : undefined}
+                        disabled={description.trim() == ""}
+                    >
+                        <Text style={styles.saveButtonText}>Download and Save</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
             <NavBar navigation={navigation} active={[false, false, true, false]}/>
         </View>
@@ -167,4 +237,66 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         width: '100%',
     },
+    saveButtonWrapper: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingTop: 20,
+    },
+    saveButton: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.accent,
+        padding: 15,
+        borderRadius: 5,
+        width: '50%',
+    },
+    disabledSaveButton: {
+        // Example style for disabled button
+        opacity: 0.5,
+        backgroundColor: '#ccc', // Light grey, adjust as needed
+    },
+    saveButtonText: {
+        color: colors.secondary,
+        fontSize: 24,
+        fontWeight: "400",
+    },
+    tagsWrapper: {
+        display: 'flex',
+        flexDirection: 'row',
+        backgroundColor: colors.primary,
+        width: '100%',
+        borderColor: colors.text,
+        borderWidth: 1,
+        color: colors.text,
+        fontSize: 16,
+        borderRadius: 5,
+        // padding: 10,
+        textAlignVertical: 'top',
+        textAlign: 'left',
+        // backgroundColor: "pink",
+        marginTop: 20,
+        // make line break
+        flexWrap: 'wrap',
+    },
+    tag: {
+        borderColor: colors.text,
+        borderWidth: 1,
+        borderRadius: 5,
+        // backgroundColor: colors.text,
+        color: colors.text,
+        padding: 5,
+        margin: 5,
+        textAlign: 'center',
+        // paddingRight: 0,
+        // marginRight: 0,
+    },
+    tagsInput: { 
+        height: 40, 
+        padding: 10,
+        // paddingLeft: 0,
+        // borderColor: 'gray', 
+        // borderWidth: 1 
+    }
 });

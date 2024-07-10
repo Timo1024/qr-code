@@ -22,7 +22,10 @@ const NavItem = ({ navigation, svgComponent, destination = "Title", text = "", f
     if(!fill) {
         return (
             <View style={{...styles.button_view}}>
-                <TouchableOpacity onPress={() => navigation.navigate(destination)} style={styles.button_main}>
+                <TouchableOpacity onPress={() => {
+                        console.log("Navigating to " + destination);
+                        navigation.navigate(destination)
+                    }} style={styles.button_main}>
                     <View style={styles.svg}>
                         {React.createElement(svgComponent, { color: color, height: 30, width: 30})}
                     </View>
