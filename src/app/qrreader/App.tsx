@@ -36,6 +36,7 @@ import { CardStyleInterpolators, createStackNavigator, TransitionPresets } from 
 import TitleScreen from './components/TitleScreen';
 import ScannerScreen from './components/ScannerScreen';
 import DBDebugScreen from './components/DBListScreen';
+import CreateScreen from './components/CreateScreen';
 
 // import resources
 import { colors } from './resources/constants/colors.json';
@@ -85,14 +86,14 @@ function App(): React.JSX.Element {
             open: {
               animation: 'timing',
               config: {
-                duration: 300,
+                duration: 200,
                 easing: Easing.linear
               },
             },
             close: {
               animation: 'timing',
               config: {
-                duration: 300,
+                duration: 200,
                 easing: Easing.linear
               },
             },
@@ -102,6 +103,7 @@ function App(): React.JSX.Element {
       >
         <Stack.Screen name="Title" component={TitleScreen} options={{headerShown: false}} />
         <Stack.Screen name="Scanner" component={ScannerScreen} options={{headerShown: false}} />
+        <Stack.Screen name="Create" component={CreateScreen} options={{headerShown: false}} />
         <Stack.Screen name="DBList" component={DBDebugScreen} options={{headerShown: false}} />
       </Stack.Navigator>
     </NavigationContainer>

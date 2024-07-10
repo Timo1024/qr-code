@@ -23,7 +23,9 @@ const NavItem = ({ navigation, svgComponent, destination = "Title", text = "", f
         return (
             <View style={{...styles.button_view}}>
                 <TouchableOpacity onPress={() => navigation.navigate(destination)} style={styles.button_main}>
-                    {React.createElement(svgComponent, { color: color, height: 30, width: 30})}
+                    <View style={styles.svg}>
+                        {React.createElement(svgComponent, { color: color, height: 30, width: 30})}
+                    </View>
                     <Text style={{...styles.button_text, color: color}}>{text}</Text>
                 </TouchableOpacity>
             </View>
@@ -32,7 +34,9 @@ const NavItem = ({ navigation, svgComponent, destination = "Title", text = "", f
         return (
             <View style={{...styles.button_view}}>
                 <TouchableOpacity onPress={() => navigation.navigate(destination)} style={{...styles.button_main, ...styles.button_main_fill}}>
-                    {React.createElement(svgComponent, { color: color, height: 30, width: 30 })}
+                    <View style={styles.svg}>
+                        {React.createElement(svgComponent, { color: color, height: 30, width: 30 })}
+                    </View>
                     <Text style={{...styles.button_text, color: color}}>{text}</Text>
                 </TouchableOpacity>
             </View>
@@ -63,5 +67,11 @@ const styles = StyleSheet.create({
         fontSize: 12,
         marginTop: 10,
         textAlign: 'center',
+    },
+    svg : {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        // backgroundColor: "pink",
     }
 });

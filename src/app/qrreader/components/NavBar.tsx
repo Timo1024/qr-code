@@ -22,8 +22,8 @@ const NavBar = ({ navigation, active = [true, false, false, false] }: NavBarProp
         <View style={styles.nav}>
             <NavItem navigation={navigation} svgComponent={HomeSvgComponent} destination="Title" text="Home" fill={active[0]}/>
             <NavItem navigation={navigation} svgComponent={ScanSvgComponent} destination="Scanner" text="Scan" fill={active[1]}/>
-            <NavItem navigation={navigation} svgComponent={JustQRSvgComponent} destination="Title" text="Create" fill={active[2]}/>
-            <NavItem navigation={navigation} svgComponent={FolderSvgComponent} destination="DBList" text="My QR-Codes" fill={active[3]}/>
+            <NavItem navigation={navigation} svgComponent={JustQRSvgComponent} destination="Create" text="Create" fill={active[2]}/>
+            <NavItem navigation={navigation} svgComponent={FolderSvgComponent} destination="DBList" text="My QRs" fill={active[3]}/>
         </View>
     );
 };
@@ -37,7 +37,8 @@ const styles = StyleSheet.create({
         width: '100%',
         justifyContent: 'space-evenly', 
         alignItems: 'flex-start',
-        padding: 20,
+        padding: 15,
+        // paddingTop: 15,
         backgroundColor: colors.secondary,
     }
 });

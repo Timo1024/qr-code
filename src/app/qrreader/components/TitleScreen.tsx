@@ -14,6 +14,7 @@ import AdditionalInfos from './AdditionalInfos';
 import QRButton from './QRButton';
 import WebsiteMetadata from './DisplayWebsite';
 import InitialButtons from './InitialButtons';
+import NavBar from './NavBar';
 
 type TitleScreenProps = {
   navigation: NavigationProp<any>;
@@ -160,6 +161,7 @@ const TitleScreen = ({ navigation, route }: TitleScreenProps) => {
             {/* <Button title="DB Debug Screen" onPress={() => navigation.navigate('DBDebug', { qrData: null })} /> */}
           </>
         )}
+        <NavBar navigation={navigation} active={[true, false, false, false]}/>
     </View>
   );
 };

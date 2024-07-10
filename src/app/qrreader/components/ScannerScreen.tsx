@@ -59,18 +59,18 @@ const ScannerScreen = ({ navigation, route }: ScannerScreenProps) => {
       </View>
       
       <View style={styles.buttonWrapper}>
-        <View style={styles.buttonWrapperInner}>
-          <View style={styles.button_view}>
+        {/* <View style={styles.buttonWrapperInner}> */}
+          {/* <View style={styles.button_view}>
             <TouchableOpacity onPress={() => navigation.navigate('Title', { qrData: route.params?.qrData })} style={styles.button_main}>
                 <CancelSvgComponent color={colors.text} size={34}/>
             </TouchableOpacity>
-          </View>
+          </View> */}
           <View style={styles.button_view}>
             <TouchableOpacity style={[styles.buttonLight, flash === RNCamera.Constants.FlashMode.torch && styles.buttonLightActive]} onPress={toggleFlash}>
               {flash === RNCamera.Constants.FlashMode.off ? <LightOffSvgComponent color={colors.text} size={28} /> : <LightOnSvgComponent color={colors.secondary} size={28} />}
             </TouchableOpacity>
           </View>
-        </View>
+        {/* </View> */}
       </View>
       <NavBar navigation={navigation} active={[false, true, false, false]}/>
     </View>
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   buttonWrapper: {
     display: 'flex',
     position: 'absolute',
-    bottom: 0,
+    bottom: "16%",
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'center',
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    bottom: 0,
+    bottom: 100,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     backgroundColor: backgroundColor,
   },
   sideOverlay: {
-    width: width * 0.1,
+    width: width * 0.2,
     height: width * 0.8,
     backgroundColor: backgroundColor,
   },

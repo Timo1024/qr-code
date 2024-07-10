@@ -139,7 +139,7 @@ const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
     return (
         // <TouchableWithoutFeedback onPress={() => setIsOpen(false)}>
             <View style={styles.container}>
-                <TopBar title="Your QR-Codes" />
+                <TopBar title="My QR-Codes" />
                 <View style={styles.content}>
                     <View style={styles.search}>
                         <DropdownMenu options={["All", "Tags", "Topic", "Title", "Subtitle", "Content"]} setIsOpen={setIsOpen} isOpen={isOpen} onChange={handleSearch} search={search} option={option} setOption={setOption} />
@@ -154,8 +154,8 @@ const DBDebugScreen = ({ navigation, route }: DBDebugScreenProps) => {
                         )}
                     />
                     </View>
-                    <Button title="Add Random Entry" onPress={handleAddEntry} />
-                    <Button title="Remove All Entries" onPress={handleRemoveAllEntries} />
+                    {/* <Button title="Add Random Entry" onPress={handleAddEntry} />
+                    <Button title="Remove All Entries" onPress={handleRemoveAllEntries} /> */}
                 </View>
                 <NavBar navigation={navigation} active={[false, false, false, true]}/>
             </View>
