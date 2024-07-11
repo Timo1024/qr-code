@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { RNCamera } from 'react-native-camera';
-import { StyleSheet, Text, TouchableOpacity, View, Dimensions, TextInput, FlatList, NativeSyntheticEvent, TextInputKeyPressEventData, Alert } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Dimensions, TextInput, FlatList, NativeSyntheticEvent, TextInputKeyPressEventData, Alert, ScrollView } from 'react-native';
 
 import { colors } from '../resources/constants/colors.json';
 
@@ -9,7 +9,7 @@ import { NavigationProp, RouteProp, useFocusEffect } from '@react-navigation/nat
 import NavBar from './NavBar';
 import TopBar from './TopBar';
 import LinearGradient from 'react-native-linear-gradient';
-import { ScrollView } from 'react-native-gesture-handler';
+// import { ScrollView } from 'react-native-gesture-handler';
 import { addEntry, getExistingTags } from '../services/database';
 import { SQLiteDatabase } from 'react-native-sqlite-storage';
 import SQLite from 'react-native-sqlite-storage';
@@ -267,11 +267,11 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
         const uniqueTags = Array.from(new Set(tags));
 
         // add free or structured to the start of the tags array
-        if(selectedSegment === 'Free Text'){
-            tags.unshift('free');
-        } else {
-            tags.unshift('structured');
-        }
+        // if(selectedSegment === 'Free Text'){
+        //     tags.unshift('free');
+        // } else {
+        //     tags.unshift('structured');
+        // }
 
         if(selectedSegment === 'Free Text'){
             setQRtext(description)
@@ -285,7 +285,7 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
         const mySubtitle = subtitle.trim() === '' ? null : subtitle;
         const myAdditional = additional.trim() === '' ? null : additional;
 
-        addEntry(db, reference, myTopic, myTitle, mySubtitle, myDescription, myAdditional, tags.join(';'))
+        addEntry(db, reference, myTopic, myTitle, mySubtitle, myDescription, myAdditional, uniqueTags.join(';'))
         .then(() => {
             // navigation.navigate("DBList")
             console.log('Entry added successfully');
@@ -659,7 +659,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: colors.accent,
-        padding: 5,
+        padding: 10,
         borderRadius: 5,
         width: '50%',
     },
@@ -670,7 +670,7 @@ const styles = StyleSheet.create({
     },
     saveButtonText: {
         color: colors.secondary,
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: "400",
     },
     tagsWrapper: {

@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { Button, Text, View, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import { Modal, Button, Text, View, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import MyModal from './QRContentModal';
 
 import { colors } from '../resources/constants/colors.json';
+import { SQLiteDatabase } from 'react-native-sqlite-storage';
 
 // Define the User type
 interface Codes {
@@ -16,10 +18,10 @@ interface Codes {
     additional: string;
 }
 
-const QRItem = ({ data }: any) => {
-
+const QRItem = ({ data, db, anyModalVisible, setAnyModalVisible }: {data : any, db : SQLiteDatabase, anyModalVisible : boolean, setAnyModalVisible : any }) => {
     const [isAtEnd, setIsAtEnd] = useState(false);
     const [isAtStart, setIsAtStart] = useState(true);
+    const [isModalVisible, setModalVisible] = useState(false);
 
     const handleScroll = (event: { nativeEvent: { layoutMeasurement: any; contentOffset: any; contentSize: any; }; }) => {
         const layoutMeasurement = event.nativeEvent.layoutMeasurement;
@@ -80,10 +82,26 @@ const QRItem = ({ data }: any) => {
                         />
                     )}
                 </View>
-                <TouchableOpacity style={styles.touchable}>
+                <TouchableOpacity 
+                    style={styles.touchable}
+                    onPress={() => {
+                        console.log(data);
+                        setModalVisible(true);
+                        setAnyModalVisible(true);
+                    }}
+                >
                     <Text style={styles.head}>Free Text QR-Code</Text>
                     <Text style={styles.sub} numberOfLines={1} ellipsizeMode='tail'>{data.description}</Text>
                 </TouchableOpacity>
+                <MyModal
+                    data={data}
+                    isVisible={isModalVisible}
+                    onClose={() => {
+                        setModalVisible(false);
+                        setAnyModalVisible(false);
+                    }}
+                    db={db}
+                />
             </View>
         )
     } else {
@@ -118,7 +136,14 @@ const QRItem = ({ data }: any) => {
                         />
                     )}
                 </View>
-                <TouchableOpacity style={styles.touchable}>
+                <TouchableOpacity 
+                    style={styles.touchable}
+                    onPress={() => {
+                        console.log(data);
+                        setModalVisible(true);
+                        setAnyModalVisible(true);
+                    }}
+                >
                     <Text style={styles.head}>{data.topic} - {data.title}</Text>
                     {data.subtitle &&
                         <Text style={styles.sub}>{data.subtitle}</Text>
@@ -127,6 +152,15 @@ const QRItem = ({ data }: any) => {
                         <Text style={styles.sub} numberOfLines={1} ellipsizeMode='tail'>{data.description}</Text>
                     }
                 </TouchableOpacity>
+                <MyModal
+                    data={data}
+                    isVisible={isModalVisible}
+                    onClose={() => {
+                        setModalVisible(false);
+                        setAnyModalVisible(false);
+                    }}
+                    db={db}
+                />
             </View>
         )
     }

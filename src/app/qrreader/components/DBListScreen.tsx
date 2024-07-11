@@ -48,6 +48,8 @@ const DBDebugScreen: React.FC<DBDebugScreenProps> = ({ navigation, route, db, se
     const [isOpen, setIsOpen] = useState(false);
     const [option, setOption] = useState<string>("all");
     const [search, setSearch] = useState<string>("");
+
+    const [anyModalVisible, setAnyModalVisible] = useState(false);
     
     // useEffect(() => {        
     //     const setupDatabase = async () => {
@@ -70,6 +72,10 @@ const DBDebugScreen: React.FC<DBDebugScreenProps> = ({ navigation, route, db, se
     useEffect(() => {
         handleSearch();
     }, [search]);
+    useEffect(() => {
+        console.log({anyModalVisible});
+        handleSearch();
+    }, [anyModalVisible]);
     useFocusEffect(
         useCallback(() => {
             console.log("It was navigated to DBDebugScreen");
@@ -166,12 +172,12 @@ const DBDebugScreen: React.FC<DBDebugScreenProps> = ({ navigation, route, db, se
                     data={codes.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())}
                     keyExtractor={(item) => item.id.toString()}
                     renderItem={({ item }) => (
-                    <QRItem data={item} />
+                    <QRItem data={item} db={db} anyModalVisible={anyModalVisible} setAnyModalVisible={setAnyModalVisible} />
                     )}
                 />
                 </View>
-                {/* <Button title="Add Random Entry" onPress={handleAddEntry} />
-                <Button title="Remove All Entries" onPress={handleRemoveAllEntries} /> */}
+                {/* <Button title="Add Random Entry" onPress={handleAddEntry} /> */}
+                <Button title="Remove All Entries" onPress={handleRemoveAllEntries} />
             </View>
             <NavBar navigation={navigation} active={[false, false, false, true]}/>
             </View>

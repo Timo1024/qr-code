@@ -104,6 +104,28 @@ const addEntry = async (
     });
 };
 
+const updateDB = async (
+    db: SQLite.SQLiteDatabase, 
+    id: number, 
+    reference : string | null = null, 
+    topic : string | null = null, 
+    title : string | null = null, 
+    subtitle : string | null = null, 
+    description : string = "no description", 
+    additional : string | null = null, 
+    tags : string | null = null) => {
+    await new Promise<void>((resolve, reject) => {
+        db.transaction(tx => {
+            tx.executeSql(
+                'UPDATE codes SET reference = ?, topic = ?, title = ?, subtitle = ?, description = ?, additional = ?, tags = ? WHERE id = ?;',
+                [reference, topic, title, subtitle, description, additional, tags, id],
+                () => resolve(),
+                error => reject(error)
+            );
+        });
+    });
+}
+
 const removeAllEntries = async (db: SQLite.SQLiteDatabase) => {
     await new Promise<void>((resolve, reject) => {
         db.transaction(tx => {
@@ -255,4 +277,4 @@ const getExistingTags = async (db: SQLite.SQLiteDatabase) => {
     });
 };
 
-export { initializeDatabase, closeDatabase, addEntry, removeAllEntries, getAllEntries, getFilteredEntries, getExistingTags};
+export { initializeDatabase, closeDatabase, addEntry, removeAllEntries, getAllEntries, getFilteredEntries, getExistingTags, updateDB};
