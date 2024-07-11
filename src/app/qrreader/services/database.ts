@@ -104,6 +104,19 @@ const addEntry = async (
     });
 };
 
+const deleteEntry = async (db: SQLite.SQLiteDatabase, id: number) => {
+    await new Promise<void>((resolve, reject) => {
+        db.transaction(tx => {
+            tx.executeSql(
+                'DELETE FROM codes WHERE id = ?;',
+                [id],
+                () => resolve(),
+                error => reject(error)
+            );
+        });
+    });
+}
+
 const updateDB = async (
     db: SQLite.SQLiteDatabase, 
     id: number, 
@@ -277,4 +290,4 @@ const getExistingTags = async (db: SQLite.SQLiteDatabase) => {
     });
 };
 
-export { initializeDatabase, closeDatabase, addEntry, removeAllEntries, getAllEntries, getFilteredEntries, getExistingTags, updateDB};
+export { initializeDatabase, closeDatabase, addEntry, removeAllEntries, getAllEntries, getFilteredEntries, getExistingTags, updateDB, deleteEntry};
