@@ -10,8 +10,9 @@ import NavBar from './NavBar';
 import TopBar from './TopBar';
 import LinearGradient from 'react-native-linear-gradient';
 import { ScrollView } from 'react-native-gesture-handler';
-import { addEntry } from '../services/database';
+import { addEntry, getExistingTags } from '../services/database';
 import { SQLiteDatabase } from 'react-native-sqlite-storage';
+import SQLite from 'react-native-sqlite-storage';
 import ViewShot, { captureRef } from 'react-native-view-shot';
 import RNFS from 'react-native-fs';
 import QRCode from 'react-native-qrcode-svg';
@@ -30,7 +31,21 @@ type CreateScreenProps = {
     setDb: (db: SQLiteDatabase) => void;
 };
 
+type TagEntry = {
+    tags: string;
+};
+
 const { width, height } = Dimensions.get('window');
+
+const getUniqueTags = async (db: SQLite.SQLiteDatabase) : Promise<string[]> => {
+    const tagsArray = await getExistingTags(db);
+    const allTags = tagsArray.flatMap(tagObj => {
+        console.log({tagObj});
+        return tagObj ? tagObj.split(';') : [];
+    });
+    const uniqueTags = Array.from(new Set(allTags)).filter(tag => tag.trim() !== '');
+    return uniqueTags;
+};
 
 const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
 
@@ -41,6 +56,8 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
     const [saved, setSaved] = useState(false);
     const [share, setShare] = useState(false);
     const [download, setDownload] = useState(false);
+    const [existingTags, setExistingTags] = useState<string[]>([]);
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
     const [description, setDescription] = useState('');
     const [tags, setTags] = useState<string[]>([]);
@@ -124,16 +141,43 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
         }
     }, [share]);   
     
+    // reset all states when screen is focused
     useFocusEffect(
         React.useCallback(() => {
             // Code to run when the screen is focused
             setSaved(false);
             setDescription('');
-            setTags([]);
+            // TODO uncomment when finished styling tags
+            // setTags([]);
+            setSelectedTags([]);
 
             // Optional: Return a function to run when the screen loses focus
             return () => {
                 // console.log('Screen is unfocused');
+            };
+        }, [])
+    );
+
+    useFocusEffect(
+        React.useCallback(() => {
+            // get all tags from database
+            getUniqueTags(db).then((myTags) => {
+                console.log(myTags);
+                setTags(myTags);
+                setExistingTags(myTags);
+
+            }).catch((error) => {
+                console.error('Error getting tags:', error);
+            });
+
+            return () => {
+                getUniqueTags(db).then((myTags) => {
+                    console.log(myTags);
+                    setTags(myTags);
+                    setExistingTags(myTags);
+                }).catch((error) => {
+                    console.error('Error getting tags:', error);
+                });
             };
         }, [])
     );
@@ -145,27 +189,67 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
     const handleInputChange = (text: string) => {
         // If the user typed a space, add the current input as a new tag
         if (text.endsWith(' ')) {
-            setTags([...tags, input.trim()]);
+            if (input.trim() === '') {
+                setInput('')
+                return;
+            }
+
+            const currentInput = input.trim();
             setInput('');
-        } else if (input === '' && text === '' && tags.length > 0) {
-            // If the user pressed backspace and the input is empty, remove the last tag and append it to the input
-            const newTags = [...tags];
-            const removedTag = newTags.pop();
-            setTags(newTags);
-            setInput(removedTag || ''); // Provide a default value of an empty string if removedTag is undefined
-        } else {
+
+            const index = tags.findIndex(tag => tag.toLowerCase() === currentInput.trim().toLowerCase());
+
+            // if tags already contains the input, dont add it again
+            if(index !== -1){
+                setSelectedTags([...selectedTags, tags[index]]);
+                return;
+            }
+
+            setTags([currentInput.trim(), ...tags]);
+            setSelectedTags([...selectedTags, currentInput.trim()]);
+        } 
+        // else if (input === '' && text === '' && tags.length > 0) {
+        //     // If the user pressed backspace and the input is empty, remove the last tag and append it to the input
+        //     const newTags = [...tags];
+        //     const removedTag = newTags.pop();
+        //     setTags(newTags);
+        //     setInput(removedTag || ''); // Provide a default value of an empty string if removedTag is undefined
+        // } 
+        else {
             setInput(text);
         }
     };
 
-    const handleKeyPress = ({ nativeEvent }: NativeSyntheticEvent<TextInputKeyPressEventData>) => {
-        if ((nativeEvent as unknown as React.KeyboardEvent<HTMLInputElement>).key === 'Backspace' && input === '' && tags.length > 0) {
+    const handleTagToggle = (index: number) => {
+
+        // if tags[index] is not in existingTags, remove it from tags
+        if(!existingTags.includes(tags[index])){
             const newTags = [...tags];
-            const removedTag = newTags.pop();
+            newTags.splice(index, 1);
             setTags(newTags);
-            // setInput(removedTag || ''); // Provide a default value of an empty string if removedTag is undefined
+            return;
         }
-    };
+
+        // if tags[index] is in existingTags and not in selectedTags, add it to selectedTags
+        if(!selectedTags.includes(tags[index])){
+            setSelectedTags([...selectedTags, tags[index]]);
+            return;
+        }
+
+        // if tags[index] is in selectedTags, remove it from selectedTags
+        const newSelectedTags = selectedTags.filter(tag => tag !== tags[index]);
+        setSelectedTags(newSelectedTags);
+
+    }
+
+    // const handleKeyPress = ({ nativeEvent }: NativeSyntheticEvent<TextInputKeyPressEventData>) => {
+    //     if ((nativeEvent as unknown as React.KeyboardEvent<HTMLInputElement>).key === 'Backspace' && input === '' && tags.length > 0) {
+    //         const newTags = [...tags];
+    //         const removedTag = newTags.pop();
+    //         setTags(newTags);
+    //         // setInput(removedTag || ''); // Provide a default value of an empty string if removedTag is undefined
+    //     }
+    // };
 
     const handleDownloadAndSave = async () => {
         // Create Database entry with date and description
@@ -174,9 +258,23 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
         // create a unique reference for the entry starting with (^_^)
         const reference = "(^_^)" + Date.now().toString() + Math.random().toString(36).substring(7);
 
-        setQRtext(reference)
+        // make all tags lower case and delete duplicates
+        const tags = selectedTags.map(tag => tag.toLowerCase());
+        const uniqueTags = Array.from(new Set(tags));
 
-        // TODO uncomment
+        // add free or structured to the start of the tags array
+        if(selectedSegment === 'Free Text'){
+            tags.unshift('free');
+        } else {
+            tags.unshift('structured');
+        }
+
+        if(selectedSegment === 'Free Text'){
+            setQRtext(description)
+        } else {
+            setQRtext(reference)
+        }
+
         addEntry(db, reference, null, null, null, description, null, tags.join(';'))
         .then(() => {
             // navigation.navigate("DBList")
@@ -210,6 +308,7 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
                     </View>
                     { selectedSegment === 'Free Text' &&
                         <ScrollView contentContainerStyle={styles.wrapper} >
+                            <Text style={styles.inputDescription}>The content of the QR-Code</Text>
                             <View style={styles.inputContainer}>
                                 <TextInput
                                     style={styles.input}
@@ -221,19 +320,25 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
                                 />
                             </View>
                             <View style={styles.tagsWrapper}>
-                                {tags.map((tag, index) => (
-                                    <Text key={index} style={styles.tag}>
-                                    {tag}
-                                    </Text>
-                                ))}
+                                <Text style={styles.inputDescription}>Add tags to find your QR-Code faster</Text>
                                 <TextInput
                                     style={styles.tagsInput}
                                     onChangeText={handleInputChange}
-                                    onKeyPress={handleKeyPress}
+                                    // onKeyPress={handleKeyPress}
                                     value={input}
-                                    placeholder={tags.length === 0 ? "Add tag by pressing spacebar" : ""}
+                                    placeholder={"Add tag by pressing spacebar"}
+                                    // placeholder={tags.length === 0 ? "Add tag by pressing spacebar" : ""}
                                     placeholderTextColor="#888"
                                 />
+                                {tags.map((tag, index) => (
+                                    <TouchableOpacity 
+                                        key={index} 
+                                        style={selectedTags.includes(tags[index]) ? styles.singleTagWrapperActive : styles.singleTagWrapperInactive} 
+                                        onPress={() => handleTagToggle(index)}
+                                    >
+                                        <Text style={selectedTags.includes(tags[index]) ? styles.tagActive : styles.tagInactive}>{tag}</Text>
+                                    </TouchableOpacity>
+                                ))}
                             </View>
                         </ScrollView>
                     }
@@ -310,7 +415,8 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
                                 onPress={() => {
                                     setSaved(false);
                                     setDescription('');
-                                    setTags([]);
+                                    // setTags(tags);
+                                    setSelectedTags([]);
                                 }}
                             >
                                 <JustQRSvgComponent color={colors.accent} height={24} width={24} />
@@ -347,7 +453,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center', 
         alignItems: 'stretch',
         // backgroundColor: "red",
-        padding: 30,
+        // padding: 15,
         paddingBottom: 0,
     },
     switchContainer: {
@@ -357,7 +463,7 @@ const styles = StyleSheet.create({
         // backgroundColor: "pink",
         justifyContent: 'center',
         alignItems: 'center',
-        // padding: 10,
+        padding: 30,
     },
     selectedRight: {
         flex: 1,
@@ -407,18 +513,27 @@ const styles = StyleSheet.create({
     },
     wrapper: {
         // display: 'flex',
-        flex: 1,
+        // flex: 1,
         justifyContent: 'center',
         alignItems: 'flex-start',
         width: '100%',
+        padding: 30,
+        paddingTop: 0,
         // backgroundColor: "pink",
     },
     inputContainer: {
         flex: 1,
         // justifyContent: 'flex-start',
-        paddingTop: 20,
+        // paddingTop: 20,
         backgroundColor: colors.primary,
         width: '100%',
+        minHeight: 0.2 * height,
+    },
+    inputDescription: {
+        color: colors.text,
+        fontSize: 14,
+        fontWeight: '300',
+        marginBottom: 10,
     },
     input: {
         flex: 1,
@@ -426,7 +541,7 @@ const styles = StyleSheet.create({
         borderColor: colors.text,
         borderWidth: 1,
         color: colors.text,
-        fontSize: 16,
+        fontSize: 14,
         borderRadius: 5,
         padding: 10,
         textAlignVertical: 'top',
@@ -463,11 +578,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         backgroundColor: colors.primary,
         width: '100%',
-        borderColor: colors.text,
-        borderWidth: 1,
+        // borderColor: colors.text,
+        // borderWidth: 1,
         color: colors.text,
         fontSize: 16,
-        borderRadius: 5,
+        // borderRadius: 5,
         // padding: 10,
         textAlignVertical: 'top',
         textAlign: 'left',
@@ -476,21 +591,59 @@ const styles = StyleSheet.create({
         // make line break
         flexWrap: 'wrap',
     },
-    tag: {
+    singleTagWrapperActive: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.text,
+        margin: 5,
+        marginLeft: 0,
+        marginTop: 0,
         borderColor: colors.text,
         borderWidth: 1,
         borderRadius: 5,
-        // backgroundColor: colors.text,
-        color: colors.text,
-        padding: 5,
+        paddingRight: 5,
+        paddingLeft: 5,
+        minWidth: 0.1 * width,
+    },
+    singleTagWrapperInactive: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.primary,
         margin: 5,
+        marginLeft: 0,
+        marginTop: 0,
+        borderColor: colors.text,
+        borderWidth: 1,
+        borderRadius: 5,
+        paddingRight: 5,
+        paddingLeft: 5,
+        minWidth: 0.1 * width,
+    },
+    tagActive: {
+        color: colors.secondary,
+        padding: 2,
         textAlign: 'center',
-        // paddingRight: 0,
-        // marginRight: 0,
+        fontWeight: '300',
+    },
+    tagInactive: {
+        color: colors.text,
+        padding: 2,
+        textAlign: 'center',
+        fontWeight: '300',
     },
     tagsInput: { 
         height: 40, 
         padding: 10,
+        width: '100%',
+        borderColor: colors.text,
+        borderWidth: 1,
+        borderRadius: 5,
+        fontSize: 14,
+        marginBottom: 10,
         // paddingLeft: 0,
         // borderColor: 'gray', 
         // borderWidth: 1 

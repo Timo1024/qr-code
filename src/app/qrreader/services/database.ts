@@ -236,4 +236,23 @@ const getFilteredEntries = async (db: SQLite.SQLiteDatabase, search:string, opti
     }
 }
 
-export { initializeDatabase, closeDatabase, addEntry, removeAllEntries, getAllEntries, getFilteredEntries};
+const getExistingTags = async (db: SQLite.SQLiteDatabase) => {
+    return new Promise<string[]>((resolve, reject) => {
+        db.transaction(tx => {
+            tx.executeSql(
+                'SELECT tags FROM codes;',
+                [],
+                (tx, results) => {
+                    const rows : string[] = [];
+                    for (let i = 0; i < results.rows.length; i++) {
+                        rows.push(results.rows.item(i).tags);
+                    }
+                    resolve(rows);
+                },
+                error => reject(error)
+            );
+        });
+    });
+};
+
+export { initializeDatabase, closeDatabase, addEntry, removeAllEntries, getAllEntries, getFilteredEntries, getExistingTags};
