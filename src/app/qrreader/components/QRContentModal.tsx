@@ -123,6 +123,10 @@ const MyModal = ({ data, isVisible, onClose, db }: { data: any, isVisible: boole
             const newTags = [...tags];
             newTags.splice(index, 1);
             setTags(newTags);
+
+            // also remove it from selectedTags
+            const newSelectedTags = selectedTags.filter(tag => tag !== tags[index]);
+            setSelectedTags(newSelectedTags);
             return;
         }
 

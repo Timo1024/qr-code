@@ -240,6 +240,10 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
             const newTags = [...tags];
             newTags.splice(index, 1);
             setTags(newTags);
+
+            // also remove it from selectedTags
+            const newSelectedTags = selectedTags.filter(tag => tag !== tags[index]);
+            setSelectedTags(newSelectedTags);
             return;
         }
 
