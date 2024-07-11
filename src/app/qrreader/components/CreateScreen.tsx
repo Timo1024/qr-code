@@ -248,7 +248,7 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
                             onPress={description.trim() != "" ? handleDownloadAndSave : undefined}
                             disabled={description.trim() == ""}
                         >
-                            <Text style={styles.saveButtonText}>Download and Save</Text>
+                            <Text style={styles.saveButtonText}>Save</Text>
                         </TouchableOpacity>
                     </View>
                     <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1.0 }} style={{ position: 'absolute', top: -1000 }}>
@@ -437,14 +437,14 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        paddingTop: 20,
+        padding: 20,
     },
     saveButton: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: colors.accent,
-        padding: 15,
+        padding: 5,
         borderRadius: 5,
         width: '50%',
     },
