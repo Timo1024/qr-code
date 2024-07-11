@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center', 
     alignItems: 'center',
     backgroundColor: colors.secondary,
-    padding: 25,
+    padding: 15,
   },
     top_bar_view_title : {
         color: '#FFFFFF',
