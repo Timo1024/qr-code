@@ -52,14 +52,17 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
     const [selectedSegment, setSelectedSegment] = useState('Free Text');
     const [input, setInput] = useState('');
     const [QRtext, setQRtext] = useState<string | null>(null);
-    const [capture, setCapture] = useState(false);
     const [saved, setSaved] = useState(false);
     const [share, setShare] = useState(false);
     const [download, setDownload] = useState(false);
     const [existingTags, setExistingTags] = useState<string[]>([]);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
+    const [topic, setTopic] = useState<string>("");
+    const [title, setTitle] = useState<string>("");
+    const [subtitle, setSubtitle] = useState<string>("");
     const [description, setDescription] = useState('');
+    const [additional, setAdditional] = useState<string>("");
     const [tags, setTags] = useState<string[]>([]);
 
     const viewShotRef = useRef<ViewShot>(null);
@@ -148,7 +151,6 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
             setSaved(false);
             setDescription('');
             // TODO uncomment when finished styling tags
-            // setTags([]);
             setSelectedTags([]);
 
             // Optional: Return a function to run when the screen loses focus
@@ -182,6 +184,24 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
         }, [])
     );
 
+    useEffect(() => {
+        setTopic('');
+        setTitle('');
+        setSubtitle('');
+        setDescription('');
+        setAdditional('');
+        setSelectedTags([]);
+
+        getUniqueTags(db).then((myTags) => {
+            console.log(myTags);
+            setTags(myTags);
+            setExistingTags(myTags);
+
+        }).catch((error) => {
+            console.error('Error getting tags:', error);
+        });
+    }, [selectedSegment]);
+
     const handlePress = (segment: React.SetStateAction<string>) => {
         setSelectedSegment(segment);
     };
@@ -208,13 +228,6 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
             setTags([currentInput.trim(), ...tags]);
             setSelectedTags([...selectedTags, currentInput.trim()]);
         } 
-        // else if (input === '' && text === '' && tags.length > 0) {
-        //     // If the user pressed backspace and the input is empty, remove the last tag and append it to the input
-        //     const newTags = [...tags];
-        //     const removedTag = newTags.pop();
-        //     setTags(newTags);
-        //     setInput(removedTag || ''); // Provide a default value of an empty string if removedTag is undefined
-        // } 
         else {
             setInput(text);
         }
@@ -242,15 +255,6 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
 
     }
 
-    // const handleKeyPress = ({ nativeEvent }: NativeSyntheticEvent<TextInputKeyPressEventData>) => {
-    //     if ((nativeEvent as unknown as React.KeyboardEvent<HTMLInputElement>).key === 'Backspace' && input === '' && tags.length > 0) {
-    //         const newTags = [...tags];
-    //         const removedTag = newTags.pop();
-    //         setTags(newTags);
-    //         // setInput(removedTag || ''); // Provide a default value of an empty string if removedTag is undefined
-    //     }
-    // };
-
     const handleDownloadAndSave = async () => {
         // Create Database entry with date and description
         console.log('Saving in Database');
@@ -275,7 +279,13 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
             setQRtext(reference)
         }
 
-        addEntry(db, reference, null, null, null, description, null, tags.join(';'))
+        const myDescription = description.trim() === '' ? 'no description' : description;
+        const myTopic = topic.trim() === '' ? null : topic;
+        const myTitle = title.trim() === '' ? null : title;
+        const mySubtitle = subtitle.trim() === '' ? null : subtitle;
+        const myAdditional = additional.trim() === '' ? null : additional;
+
+        addEntry(db, reference, myTopic, myTitle, mySubtitle, myDescription, myAdditional, tags.join(';'))
         .then(() => {
             // navigation.navigate("DBList")
             console.log('Entry added successfully');
@@ -284,14 +294,19 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
             console.error('Error adding entry:', error);
         });
 
-        // TODO Create QR-Code and save it to phone
-        // setCapture(true)
         setSaved(true)
 
         console.log('QR-Code created');
-        
 
     };
+
+    const buttonActive = () : boolean => {
+        if(selectedSegment === 'Free Text'){
+            return description.trim() !== '';
+        } else {
+            return topic.trim() !== '' && title.trim() !== '' && description.trim() !== '';
+        }
+    }
 
     return (
         <View style={styles.container}>
@@ -308,8 +323,8 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
                     </View>
                     { selectedSegment === 'Free Text' &&
                         <ScrollView contentContainerStyle={styles.wrapper} >
-                            <Text style={styles.inputDescription}>The content of the QR-Code</Text>
-                            <View style={styles.inputContainer}>
+                            <Text style={styles.inputDescription}>The content of the QR-Code *</Text>
+                            <View style={{...styles.inputContainer, ...styles.descriptionInputContainer}}>
                                 <TextInput
                                     style={styles.input}
                                     onChangeText={setDescription}
@@ -326,7 +341,7 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
                                     onChangeText={handleInputChange}
                                     // onKeyPress={handleKeyPress}
                                     value={input}
-                                    placeholder={"Add tag by pressing spacebar"}
+                                    placeholder={"Add tag by pressing space"}
                                     // placeholder={tags.length === 0 ? "Add tag by pressing spacebar" : ""}
                                     placeholderTextColor="#888"
                                 />
@@ -344,14 +359,89 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
                     }
                     { selectedSegment === 'Structured Input' &&
                         <ScrollView contentContainerStyle={styles.wrapper} >
-                            <Text>Struct Text</Text>
-                        </ScrollView>
+                        <Text style={styles.inputDescription}>Topic *</Text>
+                        <View style={{...styles.inputContainer, ...styles.topicInputContainer}}>
+                            <TextInput
+                                style={styles.input}
+                                onChangeText={setTopic}
+                                value={topic}
+                                multiline={true}
+                                placeholder="topic"
+                                placeholderTextColor="#888"
+                            />
+                        </View>
+                        <Text style={styles.inputDescription}>Title *</Text>
+                        <View style={{...styles.inputContainer, ...styles.titleInputContainer}}>
+                            <TextInput
+                                style={styles.input}
+                                onChangeText={setTitle}
+                                value={title}
+                                multiline={true}
+                                placeholder="title"
+                                placeholderTextColor="#888"
+                            />
+                        </View>
+                        <Text style={styles.inputDescription}>Subtitle</Text>
+                        <View style={{...styles.inputContainer, ...styles.subtitleInputContainer}}>
+                            <TextInput
+                                style={styles.input}
+                                onChangeText={setSubtitle}
+                                value={subtitle}
+                                multiline={true}
+                                placeholder="subtitle"
+                                placeholderTextColor="#888"
+                            />
+                        </View>
+                        <Text style={styles.inputDescription}>Description *</Text>
+                        <View style={{...styles.inputContainer, ...styles.descriptionInputContainer}}>
+                            <TextInput
+                                style={styles.input}
+                                onChangeText={setDescription}
+                                value={description}
+                                multiline={true}
+                                placeholder="description"
+                                placeholderTextColor="#888"
+                            />
+                        </View>
+                        <Text style={styles.inputDescription}>Additional Info</Text>
+                        <View style={{...styles.inputContainer, ...styles.additionalInputContainer}}>
+                            <TextInput
+                                style={styles.input}
+                                onChangeText={setAdditional}
+                                value={additional}
+                                multiline={true}
+                                placeholder="Additional Info (e.g. url)"
+                                placeholderTextColor="#888"
+                            />
+                        </View>
+                        <View style={styles.tagsWrapper}>
+                            <Text style={styles.inputDescription}>Add tags to find your QR-Code faster</Text>
+                            <TextInput
+                                style={styles.tagsInput}
+                                onChangeText={handleInputChange}
+                                // onKeyPress={handleKeyPress}
+                                value={input}
+                                placeholder={"Add tag by pressing space"}
+                                // placeholder={tags.length === 0 ? "Add tag by pressing spacebar" : ""}
+                                placeholderTextColor="#888"
+                            />
+                            {tags.map((tag, index) => (
+                                <TouchableOpacity 
+                                    key={index} 
+                                    style={selectedTags.includes(tags[index]) ? styles.singleTagWrapperActive : styles.singleTagWrapperInactive} 
+                                    onPress={() => handleTagToggle(index)}
+                                >
+                                    <Text style={selectedTags.includes(tags[index]) ? styles.tagActive : styles.tagInactive}>{tag}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </ScrollView>
                     }
                     <View style={styles.saveButtonsWrapper}>
                         <TouchableOpacity 
-                            style={[styles.saveButton, description.trim() == "" && styles.disabledSaveButton]} 
-                            onPress={description.trim() != "" ? handleDownloadAndSave : undefined}
-                            disabled={description.trim() == ""}
+                            style={[styles.saveButton, !buttonActive() && styles.disabledSaveButton]} 
+                            onPress={buttonActive() ? handleDownloadAndSave : undefined}
+                            disabled={!buttonActive()}
                         >
                             <Text style={styles.saveButtonText}>Save</Text>
                         </TouchableOpacity>
@@ -365,11 +455,6 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
                 </View>
             }
             { saved &&
-            // TODO show QR-Code
-            // TODO create new QR-code button
-            // TODO download button
-            // TODO share button
-            // TODO back to home button
                 <View style={styles.main}>
 
                     {/* <View style={styles.qrCreated}>
@@ -524,10 +609,25 @@ const styles = StyleSheet.create({
     inputContainer: {
         flex: 1,
         // justifyContent: 'flex-start',
-        // paddingTop: 20,
-        backgroundColor: colors.primary,
+        marginBottom: 20,
+        // backgroundColor: "pink",
+        // backgroundColor: colors.primary,
         width: '100%',
-        minHeight: 0.2 * height,
+    },
+    topicInputContainer: {
+        minHeight: 62,
+    },
+    titleInputContainer: {
+        minHeight: 62,
+    },
+    subtitleInputContainer: {
+        minHeight: 62,
+    },
+    descriptionInputContainer: {
+        minHeight: 0.2 * height
+    },
+    additionalInputContainer: {
+        minHeight: 0.15 * height,
     },
     inputDescription: {
         color: colors.text,
@@ -587,7 +687,7 @@ const styles = StyleSheet.create({
         textAlignVertical: 'top',
         textAlign: 'left',
         // backgroundColor: "pink",
-        marginTop: 20,
+        // marginTop: 20,
         // make line break
         flexWrap: 'wrap',
     },
