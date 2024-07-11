@@ -778,6 +778,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        padding: 40,
         paddingTop: 20,
         // backgroundColor: "blue"
     },
