@@ -20,6 +20,7 @@ import CopyableText from './CopyableText';
 import MyContext from '../MyContext';
 import { getEntryByReference } from '../services/database';
 import { ScrollView } from 'react-native-gesture-handler';
+import Tags from './Tags';
 
 type TitleScreenProps = {
   navigation: NavigationProp<any>;
@@ -174,34 +175,39 @@ const TitleScreen = ({ navigation, route, db }: TitleScreenProps) => {
     <View style={styles.title_screen_view}>
       {empty && <TopBar title={"QR-Tools"} /> }
       {!empty && <TopBar title={topic} /> }
-      <ScrollView style={styles.scrollWrapper}>
-          {/* <WebsiteMetadata url="https://en.wikipedia.org/wiki/Chemokine" /> */}
-          {structuredText && (
-            <>
-              <Heading main={title} sub={subtitle ? subtitle : ""} />
-              <Line/>
-              <Description text={description} />
-              <AdditionalInfos text={additional_information} />
-            </>
-          )}
-          {justLink && (
-            <>
-              <WebsiteMetadata url={description} />
-            </>
-          )}
-          {freeText && (
-            <>
-              <Description text={description} />
-            </>
-          )}
-          {empty && (
-            <>
-              <InitialButtons navigation={navigation} />
-            </>
-          )}
+      {!empty && 
+        <ScrollView style={styles.scrollWrapper}>
+            {/* <WebsiteMetadata url="https://en.wikipedia.org/wiki/Chemokine" /> */}
+            {structuredText && (
+              <>
+                <Heading main={title} sub={subtitle ? subtitle : ""} />
+                <Line/>
+                <Description text={description} />
+                <AdditionalInfos text={additional_information} />
+                <Tags tags={tags} />
+              </>
+            )}
+            {justLink && (
+              <>
+                <WebsiteMetadata url={description} />
+                <Tags tags={tags} />
+              </>
+            )}
+            {freeText && (
+              <>
+                <Description text={description} />
+                <Tags tags={tags} />
+              </>
+            )}
 
-        </ScrollView>
-        <CopyableText textToCopy={description}/>
+          </ScrollView>
+        } 
+        {!empty && <CopyableText textToCopy={description}/>}
+        {empty && (
+          <>
+            <InitialButtons navigation={navigation} />
+          </>
+        )}
 
         <NavBar navigation={navigation} active={[true, false, false, false]}/>
     </View>
@@ -216,11 +222,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'column',
     marginTop: 0,
-    backgroundColor: colors.primary
+    backgroundColor: colors.primary,
   },
   scrollWrapper: {
-    width: '100%',
+    // width: '100%',
     flex: 1,
+    // backgroundColor: "pink",
+    paddingRight: 10,
+    paddingLeft: 10,
   },
 });
 

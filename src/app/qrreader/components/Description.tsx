@@ -38,8 +38,8 @@ const styles = StyleSheet.create({
       width: '100%',
       justifyContent: 'flex-start', 
       alignItems: 'flex-start',
-      backgroundColor: colors.primary,
-      padding: 25,
-      paddingLeft: 25,
+      // backgroundColor: "lightblue",
+      // padding: 25,
+      paddingTop: 25,
     },
 });

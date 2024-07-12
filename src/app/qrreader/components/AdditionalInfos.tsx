@@ -10,18 +10,21 @@ import LinkSvgComponent from './svg_components/link';
 const AdditionalInfos = ({ text }: any) => {
 
     const handlePress = () => {
-        Linking.openURL(text);
-      };
-    
-      if (isUrl(text)) {
-        return (
+      Linking.openURL(text);
+    };
+
+    return (
+      <View style={styles.additional_infos_view}>
+        {
+          isUrl(text) ? 
           <TouchableOpacity onPress={handlePress}>
             <LinkSvgComponent />
           </TouchableOpacity>
-        );
-      }
-    
-      return <Text>{text}</Text>;
+          :
+          <Text style={styles.additional_infos_text}>{ text }</Text>
+        }
+      </View>
+    );
 
     // if(isUrl(text)){
     // }
@@ -37,16 +40,17 @@ export default AdditionalInfos;
 
 const styles = StyleSheet.create({
     additional_infos_view : {
-        width: '100%',
+        // width: '100%',
         justifyContent: 'center', 
         alignItems: 'center',
-        backgroundColor: colors.primary,
-        padding: 10,
-        paddingLeft: 25,
+        // backgroundColor: "pink",
+        paddingTop: 20,
+        paddingBottom: 20,
     },
     additional_infos_text : {
         color: '#FFFFFF',
-        fontSize: 24
+        fontSize: 14,
+        fontWeight: "300",
     }
 });
 

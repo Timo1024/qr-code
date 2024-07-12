@@ -23,9 +23,10 @@ const styles = StyleSheet.create({
         width: '100%',
         justifyContent: 'center', 
         alignItems: 'flex-start',
-        backgroundColor: colors.primary,
-        padding: 25,
-        paddingLeft: 25,
+        // backgroundColor: colors.primary,
+        paddingTop: 25,
+        paddingBottom: 25,
+        // paddingLeft: 25,
     },
     heading_main : {
         color: colors.text,
