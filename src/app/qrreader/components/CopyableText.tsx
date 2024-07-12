@@ -4,7 +4,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import CopyTextSvgComponent from './svg_components/copyText';
 import { colors } from '../resources/constants/colors.json';
 
-const CopyableText = ({textToCopy = "", opacity = 1.0, withText = false}) => {
+const CopyableText = ({textToCopy = ""}) => {
 
   const copyToClipboard = () => {
     Clipboard.setString(textToCopy);
@@ -12,10 +12,10 @@ const CopyableText = ({textToCopy = "", opacity = 1.0, withText = false}) => {
   };
 
   return (
-    <View style={[styles.container, { opacity: opacity }]}>
+    <View style={[styles.container, { opacity: 1 }]}>
       <TouchableOpacity style={styles.iconContainer} onPress={copyToClipboard}>
-        <CopyTextSvgComponent size={20} color={colors.text} />
-        {withText && <Text style={styles.text}>copy link</Text>}
+          <CopyTextSvgComponent size={20} color={colors.text} />
+          <Text style={styles.text}>copy QR Code content</Text>
       </TouchableOpacity>
     </View>
   );
@@ -35,12 +35,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     margin: 10,
     marginTop: 0,
-    paddingBottom: 50,
+    paddingBottom: 20,
+    paddingTop: 20,
   },
   text: {
     color: colors.text,
     fontSize: 16,
-    marginLeft: 5,
+    marginLeft: 10,
     fontWeight: "300",
   },
 });

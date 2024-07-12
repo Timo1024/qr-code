@@ -40,7 +40,8 @@ import CreateScreen from './components/CreateScreen';
 
 // import resources
 import { colors } from './resources/constants/colors.json';
-import NavBar from './components/NavBar';
+
+import DataProvider from './DataContext';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -64,15 +65,6 @@ function App(): React.JSX.Element {
 
   const [db, setDb] = useState<SQLiteDatabase | null>(null);
 
-  // const loadEntries = async (database: SQLiteDatabase) => {
-  //     try {
-  //         const entries : Codes[] = await getAllEntries(database);
-  //         setCodes(entries);
-  //     } catch (error) {
-  //         console.error('Failed to load entries:', error);
-  //     }
-  // };
-
   function withDatabase(Component: React.ComponentType<any>) {
     // Assuming db and setDb are available in this scope
     return (props: React.PropsWithChildren<any>) => <Component {...props} db={db} setDb={setDb} />;
@@ -91,96 +83,84 @@ function App(): React.JSX.Element {
         } catch (error) {
             console.error('Failed to initialize database:', error);
         }
-    };
-    
-    setupDatabase();
-}, []);
-
-  // useEffect(() => {
-  //   let db: SQLite.SQLiteDatabase | undefined;
-
-  //   const setupDatabase = async () => {
-  //     db = await initializeDatabase();
-  //   };
-
-  //   setupDatabase();
-
-  //   return () => {
-  //     closeDatabase(db);
-  //   };
-  // }, []);
+      };
+      
+      setupDatabase();
+  }, []);
 
   return (
-    <NavigationContainer theme={{
-      dark: true,
-      colors: {
-        background: colors.primary,
-        primary: '',
-        card: '',
-        text: '',
-        border: '',
-        notification: ''
-      },
-    }}>
-      <StatusBar backgroundColor={colors.secondary} barStyle="light-content" />
-      <Stack.Navigator 
-        initialRouteName="Title"
-        screenOptions={{
-          gestureEnabled: false,
-          ...TransitionPresets.ScaleFromCenterAndroid, // This is one of the predefined animations
-          transitionSpec: {
-            open: {
-              animation: 'timing',
-              config: {
-                duration: 200,
-                easing: Easing.linear
-              },
-            },
-            close: {
-              animation: 'timing',
-              config: {
-                duration: 200,
-                easing: Easing.linear
-              },
-            },
-          },
-          // cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS, // This is for the card style
-        }}
-      >
-        <Stack.Screen 
-          name="Title" 
-          component={TitleScreen} 
-          options={{
+    <DataProvider>
+      <NavigationContainer theme={{
+        dark: true,
+        colors: {
+          background: colors.primary,
+          primary: '',
+          card: '',
+          text: '',
+          border: '',
+          notification: ''
+        },
+      }}>
+        <StatusBar backgroundColor={colors.secondary} barStyle="light-content" />
+        <Stack.Navigator 
+          initialRouteName="Title"
+          screenOptions={{
             gestureEnabled: false,
-            headerShown: false
+            ...TransitionPresets.ScaleFromCenterAndroid, // This is one of the predefined animations
+            transitionSpec: {
+              open: {
+                animation: 'timing',
+                config: {
+                  duration: 200,
+                  easing: Easing.linear
+                },
+              },
+              close: {
+                animation: 'timing',
+                config: {
+                  duration: 200,
+                  easing: Easing.linear
+                },
+              },
+            },
+            // cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS, // This is for the card style
           }}
-        />
-        <Stack.Screen 
-          name="Scanner" 
-          component={ScannerScreen} 
-          options={{
-            gestureEnabled: false,
-            headerShown: false
-          }} 
-        />
-        <Stack.Screen 
-          name="Create" 
-          component={withDatabase(CreateScreen)} 
-          options={{
-            gestureEnabled: false,
-            headerShown: false
-          }} 
-        />
-        <Stack.Screen 
-          name="DBList" 
-          component={withDatabase(DBDebugScreen)} 
-          options={{
-            gestureEnabled: false,
-            headerShown: false
-          }} 
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+        >
+          <Stack.Screen 
+            name="Title" 
+            component={withDatabase(TitleScreen)} 
+            options={{
+              gestureEnabled: false,
+              headerShown: false
+            }}
+          />
+          <Stack.Screen 
+            name="Scanner" 
+            component={ScannerScreen} 
+            options={{
+              gestureEnabled: false,
+              headerShown: false
+            }} 
+          />
+          <Stack.Screen 
+            name="Create" 
+            component={withDatabase(CreateScreen)} 
+            options={{
+              gestureEnabled: false,
+              headerShown: false
+            }} 
+          />
+          <Stack.Screen 
+            name="DBList" 
+            component={withDatabase(DBDebugScreen)} 
+            options={{
+              gestureEnabled: false,
+              headerShown: false
+            }} 
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </DataProvider>
   );
 }
 

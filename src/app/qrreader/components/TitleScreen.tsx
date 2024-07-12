@@ -1,8 +1,8 @@
-import React from 'react';
-import { Button, Text, View, StyleSheet } from 'react-native';
+import React, { useContext, useEffect } from 'react';
+import { Button, Text, View, StyleSheet, Switch } from 'react-native';
 const keys = require('../resources/constants/keys.json') as { encrypt_key: string };
 
-import { NavigationProp, RouteProp } from '@react-navigation/native';
+import { NavigationProp, RouteProp, useFocusEffect } from '@react-navigation/native';
 
 import { colors } from '../resources/constants/colors.json';
 
@@ -15,152 +15,194 @@ import QRButton from './QRButton';
 import WebsiteMetadata from './DisplayWebsite';
 import InitialButtons from './InitialButtons';
 import NavBar from './NavBar';
+import CopyableText from './CopyableText';
+
+import MyContext from '../MyContext';
+import { getEntryByReference } from '../services/database';
+import { ScrollView } from 'react-native-gesture-handler';
 
 type TitleScreenProps = {
   navigation: NavigationProp<any>;
   route: RouteProp<any>;
+  db: any;
 };
 
-const key = keys.encrypt_key;
+const TitleScreen = ({ navigation, route, db }: TitleScreenProps) => {  
 
-function hexToBytes(hex: string): number[] {
-  const bytes = [];
-  for (let i = 0; i < hex.length; i += 2) {
-      bytes.push(parseInt(hex.substring(i, i + 2), 16));
-  }
-  return bytes;
-}
-
-function bytesToString(bytes: number[]): string {
-  let decodedString = '';
-  for (let i = 0; i < bytes.length; i++) {
-      decodedString += String.fromCharCode(bytes[i]);
-  }
-  return decodedString;
-}
-
-// Function to decrypt the data
-function decryptData(encoded_string: string, key: string) {
-
-    // convert key to a number
-    var key_int : number = parseInt(key);
-
-    const encryptedBytes = hexToBytes(encoded_string);
-    
-    // Simple decoding algorithm: XOR with the same key used for encryption
-    // const key_ = 0xAB;  // Same key used in Python example
-    const decryptedBytes = encryptedBytes.map(byte => byte ^ key_int);
-    
-    // Convert bytes back to UTF-16 string
-    const decryptedString = bytesToString(decryptedBytes);
-    
-    return decryptedString;
-}
-
-const TitleScreen = ({ navigation, route }: TitleScreenProps) => {  
-
-  var data = route.params?.qrData;
-
-  var empty = false;
-
-  // console.log({data});
-
-  if(data == null) {
-    data = "QR code scanner\n\n\n\n";
-    empty = true;
-  }
-
-  // check if data starts with "(^_^)" and then remove it
-  if(data.startsWith("(^_^)")) {
-    data = data.substring(5);
-
-    // console.log({key});
-    
-    // decrypt the data
-    // TODO: implement decryption
-    const decryptedData = decryptData(data, key);
-
-    // console.log({decryptedData});
-    
-    data = decryptedData;
-    
-  }
-
-  // split the data into an object with 
-  // 1. topic
-  // 2. title
-  // 3. subtitle
-  // 4. description
-  // 5. additional information (e.g. link to a website)
-  // all parts should be separated by a newline character
+  const { 
+    sharedValue, setSharedValue, 
+    topic, setTopic,
+    title, setTitle,
+    subtitle, setSubtitle,
+    description, setDescription,
+    additional_information, setAdditionalInformation,
+    tags, setTags,
+  } = useContext(MyContext);
   
-  // make 0 topic, 1 title, 2 subtitle, last additional information and the rest description
-  var parts = data.split("\n");
-  var topic = parts[0];
-  var title = parts[1];
-  var subtitle = parts[2];
-  var description = parts.slice(3, parts.length - 1).join("\n");
-  var additional_information = parts[parts.length - 1];  
+  const [empty, setEmpty] = React.useState(true);
+  const [justLink, setJustLink] = React.useState(false);
+  const [freeText, setFreeText] = React.useState(false);
+  const [structuredText, setStructuredText] = React.useState(false);
 
+  const param = route.params?.qrData;
+
+  const getData = React.useCallback(async () => {    
+    var dataFromRoute = route.params?.qrData;
+    console.log({dataFromRoute});
+    
+    if(dataFromRoute != null){      
+      if(dataFromRoute.startsWith("(^_^)")) {
+        // search in DB for this key
+        getEntryByReference(db, dataFromRoute).then((result: any) => {
+          console.log({result});
+          if(result){
+            result.topic && setTopic(result.topic);
+            result.title && setTitle(result.title);
+            result.subtitle && setSubtitle(result.subtitle);
+            result.description && setDescription(result.description);
+            result.additional && setAdditionalInformation(result.additional);
+            result.tags && setTags(result.tags.split(';'));
+          } else {
+            setTopic("Scanned QR-Code");
+            setDescription(dataFromRoute);
+            setTitle("");
+            setSubtitle("");
+            setAdditionalInformation("");
+            setTags([]);
+          }
+        });
+      } else {
+        setTopic("Scanned QR-Code");
+        setDescription(dataFromRoute);
+        setTitle("");
+        setSubtitle("");
+        setAdditionalInformation("");
+        setTags([]);
+      }
+    }
+
+    console.log("The data extracted from the QR-Code is:");
+    console.log({topic, title, subtitle, description, additional_information, tags});
+    
+
+  }, [route.params?.qrData, db]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log({sharedValue});
+      // getData();
+      return () => {};
+    }, [sharedValue])
+  );
+  useEffect(() => {
+    console.log({param});
+    if(param != null){      
+      if(param.startsWith("(^_^)")) {
+        // search in DB for this key
+        getEntryByReference(db, param).then((result: any) => {
+          console.log({result});
+          if(result){
+            result.topic && setTopic(result.topic);
+            result.title && setTitle(result.title);
+            result.subtitle && setSubtitle(result.subtitle);
+            result.description && setDescription(result.description);
+            result.additional && setAdditionalInformation(result.additional);
+            result.tags && setTags(result.tags.split(';'));
+          } else {
+            setTopic("Scanned QR-Code");
+            setDescription(param);
+            setTitle("");
+            setSubtitle("");
+            setAdditionalInformation("");
+            setTags([]);
+          }
+        });
+      } else {
+        setTopic("Scanned QR-Code");
+        setDescription(param);
+        setTitle("");
+        setSubtitle("");
+        setAdditionalInformation("");
+        setTags([]);
+      }
+    }
+  }, [param]);  
+
+  useEffect(() => {
+    setEmpty(true);
+    setJustLink(false);
+    setFreeText(false);
+    setStructuredText(false);
+    if(description && description !== "") {
+      setEmpty(false);
+      if(topic && title) {
+        setStructuredText(true);
+      } else {
+        if(isUrl(description)) {
+          setJustLink(true);
+        } else {
+          setFreeText(true);
+        }
+      }
+    }
+  }, [description, topic, title]);
+
+  
   function isUrl(string: string): boolean {
     var res = string.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
     return (res !== null)
   }
 
-  var justLink = false;
-  var justDescription = false;
-
   // check if any of the parts are null
-  if(topic == null || title == null || subtitle == null || description == null || additional_information == null) {
-    // empty = true;
-    var x = 0;
-    // check if the data is a link
-    if(isUrl(data)) {
-      justLink = true;
-    } else {
-      justDescription = true;
-    }
-
-  }
+  // if(description != "" && description != null && description != undefined) {
+  //   setEmpty(false);
+  //   // check if data is structured
+  //   if(topic != "" && title != "") {
+  //     setStructuredText(true);
+  //     // check if the data is a link
+      
+  //   } else {
+  //     if(isUrl(description)) {
+  //       setJustLink(true);
+  //     } else {
+  //       setFreeText(true);
+  //     }
+  //   }
+  // }
 
   return (
     <View style={styles.title_screen_view}>
-        {/* <WebsiteMetadata url="https://en.wikipedia.org/wiki/Chemokine" /> */}
-        {!empty && !justLink && !justDescription && (
-          <>
-            <TopBar title={topic} />
-            <Heading main={title} sub={subtitle} />
-            <Line/>
-            <Description text={description} />
-            <AdditionalInfos text={additional_information} />
-            <QRButton navigation={navigation} fill={false} data={data} />
-          </>
-        )}
-        {justLink && (
-          <>
-            <TopBar title="Scanned QR-Code" />
-            <WebsiteMetadata url={data} />
-            <QRButton navigation={navigation} fill={false} data={data} />
-          </>
-        )}
-        {justDescription && (
-          <>
-            <TopBar title="QR-Code Scanner" />
-            <Heading main="Your scanned QR-Code" sub="" />
-            <Line/>
-            <Description text={data} />
-            <QRButton navigation={navigation} fill={false} data={data} />
-          </>
-        )}
-        {empty && (
-          <>
-            <TopBar title="QR-Tools" />
-            <InitialButtons navigation={navigation} />
-            {/* TODO remove when finished debugging */}
-            {/* add button whihc redirects to DBDebugScreen */}
-            {/* <Button title="DB Debug Screen" onPress={() => navigation.navigate('DBDebug', { qrData: null })} /> */}
-          </>
-        )}
+      {empty && <TopBar title={"QR-Tools"} /> }
+      {!empty && <TopBar title={topic} /> }
+      <ScrollView style={styles.scrollWrapper}>
+          {/* <WebsiteMetadata url="https://en.wikipedia.org/wiki/Chemokine" /> */}
+          {structuredText && (
+            <>
+              <Heading main={title} sub={subtitle ? subtitle : ""} />
+              <Line/>
+              <Description text={description} />
+              <AdditionalInfos text={additional_information} />
+            </>
+          )}
+          {justLink && (
+            <>
+              <WebsiteMetadata url={description} />
+            </>
+          )}
+          {freeText && (
+            <>
+              <Description text={description} />
+            </>
+          )}
+          {empty && (
+            <>
+              <InitialButtons navigation={navigation} />
+            </>
+          )}
+
+        </ScrollView>
+        <CopyableText textToCopy={description}/>
+
         <NavBar navigation={navigation} active={[true, false, false, false]}/>
     </View>
   );
@@ -175,7 +217,11 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     marginTop: 0,
     backgroundColor: colors.primary
-  }
+  },
+  scrollWrapper: {
+    width: '100%',
+    flex: 1,
+  },
 });
 
 export default TitleScreen;

@@ -290,4 +290,23 @@ const getExistingTags = async (db: SQLite.SQLiteDatabase) => {
     });
 };
 
-export { initializeDatabase, closeDatabase, addEntry, removeAllEntries, getAllEntries, getFilteredEntries, getExistingTags, updateDB, deleteEntry};
+const getEntryByReference = async (db: SQLite.SQLiteDatabase, reference: string) => {
+    return new Promise<Codes | null>((resolve, reject) => {
+        db.transaction(tx => {
+            tx.executeSql(
+                'SELECT * FROM codes WHERE reference = ?;',
+                [reference],
+                (tx, results) => {
+                    if (results.rows.length > 0) {
+                        resolve(results.rows.item(0));
+                    } else {
+                        resolve(null);
+                    }
+                },
+                error => reject(error)
+            );
+        });
+    });
+}
+
+export { initializeDatabase, closeDatabase, addEntry, removeAllEntries, getAllEntries, getFilteredEntries, getExistingTags, updateDB, deleteEntry, getEntryByReference};

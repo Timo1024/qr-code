@@ -5,40 +5,51 @@ import { colors } from '../resources/constants/colors.json';
 import LinkSvgComponent from './svg_components/link';
 import CopyableText from './CopyableText';
 
+function isUrl(string: string): boolean {
+  var res = string.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
+  return (res !== null)
+}
+
 const WebsiteMetadata = ({ url }: { url: string }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+
+  console.log({url});
+  
 
   useEffect(() => {
     setTitle("");
     setDescription("");
 
+    
     const fetchMetadata = async () => {
       try {
         const response = await fetch(url);
         const html = await response.text();
-
+        
         // Extract title
         const titleMatch = html.match(/<title>(.*?)<\/title>/);
         if (titleMatch && titleMatch[1]) {
-            setTitle(titleMatch[1]);
+          setTitle(titleMatch[1]);
         } else {
-            setTitle("")
+          setTitle("")
         }
-
+        
         // Extract description
         const descriptionMatch = html.match(/<meta name="description" content="(.*?)"/);
         if (descriptionMatch && descriptionMatch[1]) {
-            setDescription(descriptionMatch[1]);
+          setDescription(descriptionMatch[1]);
         } else {
-            setDescription("")
+          setDescription("")
         }
       } catch (error) {
-        console.error('Error fetching metadata:', error);
+        console.log('Error fetching metadata:', error);
       }
     };
 
-    fetchMetadata();
+    if(isUrl(url)) {
+      fetchMetadata();
+    }
   }, [url]);
 
   const handlePress = () => {
@@ -56,7 +67,6 @@ const WebsiteMetadata = ({ url }: { url: string }) => {
         <TouchableOpacity onPress={handlePress} style={styles.linkButton}>
             <Text style={styles.linkText}>Go to website</Text>
         </TouchableOpacity>
-        <CopyableText textToCopy={ url } opacity={1} withText={true}/>
     </View>
   );
 };

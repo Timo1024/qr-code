@@ -2,8 +2,6 @@ import React from 'react';
 import { Button, Text, View, StyleSheet } from 'react-native';
 import { NavigationProp, RouteProp } from '@react-navigation/native';
 
-import CopyableText from './CopyableText';
-
 import { colors } from '../resources/constants/colors.json';
 
 const Description = ({ text }: any) => {
@@ -12,7 +10,6 @@ const Description = ({ text }: any) => {
         <View style={styles.description_view}>
           <Text style={styles.content}>{ text }</Text>
         </View>
-        <CopyableText textToCopy={ text } opacity={0.7} withText={false} />
       </View>
     );
 };
