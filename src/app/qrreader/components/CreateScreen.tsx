@@ -31,10 +31,6 @@ type CreateScreenProps = {
     setDb: (db: SQLiteDatabase) => void;
 };
 
-type TagEntry = {
-    tags: string;
-};
-
 const { width, height } = Dimensions.get('window');
 
 const getUniqueTags = async (db: SQLite.SQLiteDatabase) : Promise<string[]> => {
@@ -147,15 +143,10 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
     // reset all states when screen is focused
     useFocusEffect(
         React.useCallback(() => {
-            // Code to run when the screen is focused
             setSaved(false);
             setDescription('');
-            // TODO uncomment when finished styling tags
             setSelectedTags([]);
-
-            // Optional: Return a function to run when the screen loses focus
             return () => {
-                // console.log('Screen is unfocused');
             };
         }, [])
     );
@@ -270,13 +261,6 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
         const tags = selectedTags.map(tag => tag.toLowerCase());
         const uniqueTags = Array.from(new Set(tags));
 
-        // add free or structured to the start of the tags array
-        // if(selectedSegment === 'Free Text'){
-        //     tags.unshift('free');
-        // } else {
-        //     tags.unshift('structured');
-        // }
-
         if(selectedSegment === 'Free Text'){
             setQRtext(description)
         } else {
@@ -291,7 +275,6 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
 
         addEntry(db, reference, myTopic, myTitle, mySubtitle, myDescription, myAdditional, uniqueTags.join(';'))
         .then(() => {
-            // navigation.navigate("DBList")
             console.log('Entry added successfully');
         })
         .catch((error) => {
@@ -299,8 +282,6 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
         });
 
         setSaved(true)
-
-        console.log('QR-Code created');
 
     };
 
@@ -423,10 +404,8 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
                             <TextInput
                                 style={styles.tagsInput}
                                 onChangeText={handleInputChange}
-                                // onKeyPress={handleKeyPress}
                                 value={input}
                                 placeholder={"Add tag by pressing space"}
-                                // placeholder={tags.length === 0 ? "Add tag by pressing spacebar" : ""}
                                 placeholderTextColor="#888"
                             />
                             {tags.map((tag, index) => (
@@ -460,10 +439,6 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
             }
             { saved &&
                 <View style={styles.main}>
-
-                    {/* <View style={styles.qrCreated}>
-                        <Text style={styles.qrCreatedText}>QR-Code created</Text>
-                    </View> */}
 
                     <View style={styles.showQR}>
                         <QRCode
@@ -504,7 +479,6 @@ const CreateScreen = ({ navigation, route, db, setDb }: CreateScreenProps) => {
                                 onPress={() => {
                                     setSaved(false);
                                     setDescription('');
-                                    // setTags(tags);
                                     setSelectedTags([]);
                                 }}
                             >
@@ -541,15 +515,12 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center', 
         alignItems: 'stretch',
-        // backgroundColor: "red",
-        // padding: 15,
         paddingBottom: 0,
     },
     switchContainer: {
         flexDirection: 'row',
         borderRadius: 5,
         overflow: 'hidden',
-        // backgroundColor: "pink",
         justifyContent: 'center',
         alignItems: 'center',
         padding: 30,
@@ -601,21 +572,15 @@ const styles = StyleSheet.create({
         color: colors.secondary,
     },
     wrapper: {
-        // display: 'flex',
-        // flex: 1,
         justifyContent: 'center',
         alignItems: 'flex-start',
         width: '100%',
         padding: 30,
         paddingTop: 0,
-        // backgroundColor: "pink",
     },
     inputContainer: {
         flex: 1,
-        // justifyContent: 'flex-start',
         marginBottom: 20,
-        // backgroundColor: "pink",
-        // backgroundColor: colors.primary,
         width: '100%',
     },
     topicInputContainer: {
@@ -641,7 +606,6 @@ const styles = StyleSheet.create({
     },
     input: {
         flex: 1,
-        // height: 40,
         borderColor: colors.text,
         borderWidth: 1,
         color: colors.text,
@@ -668,9 +632,8 @@ const styles = StyleSheet.create({
         width: '50%',
     },
     disabledSaveButton: {
-        // Example style for disabled button
         opacity: 0.5,
-        backgroundColor: '#ccc', // Light grey, adjust as needed
+        backgroundColor: '#ccc',
     },
     saveButtonText: {
         color: colors.secondary,
@@ -682,17 +645,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         backgroundColor: colors.primary,
         width: '100%',
-        // borderColor: colors.text,
-        // borderWidth: 1,
         color: colors.text,
         fontSize: 16,
-        // borderRadius: 5,
-        // padding: 10,
         textAlignVertical: 'top',
         textAlign: 'left',
-        // backgroundColor: "pink",
-        // marginTop: 20,
-        // make line break
         flexWrap: 'wrap',
     },
     singleTagWrapperActive: {
@@ -748,9 +704,6 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         fontSize: 14,
         marginBottom: 10,
-        // paddingLeft: 0,
-        // borderColor: 'gray', 
-        // borderWidth: 1 
     },
     
     // buttons on finished screen
@@ -766,11 +719,9 @@ const styles = StyleSheet.create({
         fontWeight: '400',
     },
     showQR: {
-        // flex: 1,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: "pink",
         margin: 20,
         marginBottom: 40,
     },
@@ -780,7 +731,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 40,
         paddingTop: 20,
-        // backgroundColor: "blue"
     },
     saveButtons: {
         display: 'flex',
@@ -832,6 +782,5 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '100%',
         marginBottom: 20,
-        // backgroundColor: "pink",
     },
 });

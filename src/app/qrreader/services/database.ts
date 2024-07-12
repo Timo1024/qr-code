@@ -1,11 +1,10 @@
 // Import SQLite
 import SQLite from 'react-native-sqlite-storage';
-import RNFS from 'react-native-fs';
 
 // Enable debug mode for SQLite
 // TODO remove when everything with db works fine
-SQLite.DEBUG(true);
-SQLite.enablePromise(true);
+// SQLite.DEBUG(true);
+// SQLite.enablePromise(true);
 
 interface Codes {
     id: number;
@@ -34,23 +33,17 @@ const initializeDatabase = async () => {
                     "SELECT name FROM sqlite_master WHERE type='table' AND name='codes';",
                     [],
                     (tx, result) => {
-                        // console.log("Table existence check result:", result);
                         resolve(result.rows.length > 0);
                     },
                     error => {
-                        // console.error("Error checking table existence:", error);
                         reject(error);
                     }
                 );
             }, (transactionError) => {
-                // console.error("Transaction error:", transactionError);
                 reject(transactionError);
             }, () => {
-                // console.log("Transaction complete");
             });
         });
-        
-        // console.log("Table exists:", tableExists);
         
         if (!tableExists) {
             // Create tables if they do not exist
@@ -90,7 +83,8 @@ const addEntry = async (
         date = "no date";
     }
     
-    logTableColumns(db, 'codes');
+    // TODO remove when finished logging
+    // logTableColumns(db, 'codes');
     
     await new Promise<void>((resolve, reject) => {
         db.transaction(tx => {
@@ -184,31 +178,30 @@ const closeDatabase = async (db: SQLite.SQLiteDatabase | undefined) => {
 };
 
 // TODO remove when finished logging
-const logTableColumns = async (db: SQLite.SQLiteDatabase, tableName: string) => {
-    await new Promise<void>((resolve, reject) => {
-        db.transaction(tx => {
-            tx.executeSql(
-                `PRAGMA table_info(${tableName});`,
-                [],
-                (_, result) => {
-                    console.log(`Columns in ${tableName}:`);
-                    let rows = result.rows;
-                    for (let i = 0; i < rows.length; i++) {
-                        console.log(rows.item(i));
-                    }
-                    resolve();
-                },
-                error => {
-                    console.error(`Error fetching columns for table ${tableName}:`, error);
-                    reject(error);
-                }
-            );
-        });
-    });
-};
+// const logTableColumns = async (db: SQLite.SQLiteDatabase, tableName: string) => {
+//     await new Promise<void>((resolve, reject) => {
+//         db.transaction(tx => {
+//             tx.executeSql(
+//                 `PRAGMA table_info(${tableName});`,
+//                 [],
+//                 (_, result) => {
+//                     console.log(`Columns in ${tableName}:`);
+//                     let rows = result.rows;
+//                     for (let i = 0; i < rows.length; i++) {
+//                         console.log(rows.item(i));
+//                     }
+//                     resolve();
+//                 },
+//                 error => {
+//                     console.error(`Error fetching columns for table ${tableName}:`, error);
+//                     reject(error);
+//                 }
+//             );
+//         });
+//     });
+// };
 
 const getFilteredEntries = async (db: SQLite.SQLiteDatabase, search:string, option:string) => {
-
 
     option = option.toLowerCase();
 
@@ -219,7 +212,6 @@ const getFilteredEntries = async (db: SQLite.SQLiteDatabase, search:string, opti
         search = "";
     }
 
-    // if option == "All" then search for column topic, title, subtitle, description, additional, tags
     if(option == "all") {
         return new Promise<Codes[]>((resolve, reject) => {
             db.transaction(tx => {

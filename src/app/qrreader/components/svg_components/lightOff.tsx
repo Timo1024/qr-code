@@ -1,4 +1,4 @@
-import Svg, { Path, Circle } from 'react-native-svg';
+import Svg, { Path } from 'react-native-svg';
 
 const LightOffSvgComponent = ({color = "white", size = 24}) => (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">

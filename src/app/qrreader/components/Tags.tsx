@@ -1,6 +1,5 @@
 import React from 'react';
-import { Button, Text, View, StyleSheet } from 'react-native';
-import { NavigationProp, RouteProp } from '@react-navigation/native';
+import { Text, View, StyleSheet } from 'react-native';
 
 import { colors } from '../resources/constants/colors.json';
 
@@ -24,7 +23,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: "pink",
         width: '100%',
         marginBottom: 20,
         flexWrap: 'wrap',

@@ -1,4 +1,4 @@
-import Svg, { Path, Circle } from 'react-native-svg';
+import Svg, { Path } from 'react-native-svg';
 
 const CopyTextSvgComponent = ({color = "black", size = 24}) => (
     <Svg width={size} height={size} viewBox="0 0 20 20" fill="none">

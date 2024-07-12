@@ -1,6 +1,5 @@
 import React from 'react';
-import { Button, Text, View, StyleSheet, TouchableOpacity } from 'react-native';
-import { NavigationProp, RouteProp } from '@react-navigation/native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import QRSvgComponent from './svg_components/qr';
 
 import { colors } from '../resources/constants/colors.json';
@@ -10,7 +9,6 @@ const QRButton = ({ navigation, fill, data }: any) => {
         return (
             <View style={styles.button_view}>
                 <TouchableOpacity onPress={() => navigation.navigate('Scanner', { qrData: data })} style={styles.button_main}>
-                    {/* <Text style={styles.button_text}>Scan QR code</Text> */}
                     <QRSvgComponent />
                 </TouchableOpacity>
             </View>
@@ -19,7 +17,6 @@ const QRButton = ({ navigation, fill, data }: any) => {
         return (
             <View style={styles.button_view_fill}>
                 <TouchableOpacity onPress={() => navigation.navigate('Scanner', { qrData: data })} style={styles.button_main}>
-                    {/* <Text style={styles.button_text}>Scan QR code</Text> */}
                     <QRSvgComponent />
                 </TouchableOpacity>
             </View>

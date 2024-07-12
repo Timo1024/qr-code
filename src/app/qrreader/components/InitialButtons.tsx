@@ -1,10 +1,8 @@
 import React from 'react';
-import { Button, Text, View, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
-import { NavigationProp, RouteProp } from '@react-navigation/native';
+import { Text, View, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import JustQRSvgComponent from './svg_components/justQR';
 import { colors } from '../resources/constants/colors.json';
 import ScanSvgComponent from './svg_components/scan';
-import FolderSvgComponent from './svg_components/folder';
 
 // Get the screen width
 const screenWidth = Dimensions.get('window').width;
@@ -25,12 +23,6 @@ const InitialButtons = ({ navigation }: any) => {
                     <JustQRSvgComponent height={35} width={35} color={colors.secondary}/>
                 </View>
             </TouchableOpacity>
-            {/* <TouchableOpacity onPress={() => navigation.navigate('DBList', { qrData: null })} style={styles.button_secondary}>
-                <Text style={styles.text_secondary}>My QR-Codes</Text>
-                <View style={styles.icon_wrapper_secondary}>
-                    <FolderSvgComponent height={35} width={35} color={colors.accent}/>
-                </View>
-            </TouchableOpacity> */}
         </View>
     );
 };
@@ -44,7 +36,6 @@ const styles = StyleSheet.create({
         width: '100%',
         justifyContent: 'space-evenly', 
         alignItems: 'center',
-        // backgroundColor: "pink",
         backgroundColor: colors.primary,
         padding: 30,
         paddingBottom: 50,
@@ -78,25 +69,21 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: "400",
         paddingBottom: 10,
-        // backgroundColor: "pink"
     },
     text_secondary : {
         color: colors.accent,
         fontSize: 18,
         fontWeight: "400",
         paddingBottom: 10,
-        // backgroundColor: "pink"
     },
     icon_wrapper_primary : {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        // backgroundColor: "pink",
     },
     icon_wrapper_secondary : {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        // backgroundColor: "pink",
     }
 });

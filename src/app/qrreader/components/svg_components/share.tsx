@@ -1,4 +1,4 @@
-import Svg, { Path, Circle } from 'react-native-svg';
+import Svg, { Path } from 'react-native-svg';
 
 const ShareSvgComponent = ({color = "black", width = 24, height=24}) => (
     <Svg width={width} height={height} viewBox="0 0 16 16" fill="none">

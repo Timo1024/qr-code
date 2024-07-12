@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import { captureRef } from 'react-native-view-shot';
 import RNFS from 'react-native-fs';
@@ -42,9 +42,6 @@ const OffScreenQRCode = ({ QRtext }: { QRtext: string }) => {
 
 const styles = StyleSheet.create({
   offScreen: {
-    // position: 'absolute',
-    // left: Dimensions.get('window').width,
-    // top: Dimensions.get('window').height,
   },
 });
 

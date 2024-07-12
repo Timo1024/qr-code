@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Button, StyleSheet, Text, TouchableOpacity, Platform, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import { colors } from '../resources/constants/colors.json';
 
 import ArrowTopSvgComponent from './svg_components/arrowTop';
 import ArrowDownSvgComponent from './svg_components/arrowBottom';
-
-const { width, height } = Dimensions.get('window');
 
 type DropdownMenuProps = {
     options: string[];
@@ -19,7 +17,6 @@ type DropdownMenuProps = {
 };
 
 const DropdownMenu = ({ options, setIsOpen, isOpen, onChange, search, option, setOption }: DropdownMenuProps) => {
-    //   const [isOpen, setIsOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
     useEffect(() => {
@@ -38,7 +35,6 @@ const DropdownMenu = ({ options, setIsOpen, isOpen, onChange, search, option, se
 
   return (
     <View style={styles.container}>
-        {/* <Button title={selectedOption || "Select an option"} onPress={handleOpen} /> */}
         <TouchableOpacity onPress={handleOpen} style={styles.active}>
             <Text style={styles.text} numberOfLines={1} ellipsizeMode='tail'>{selectedOption || "All"}</Text>
             <View style={styles.icon_wrapper}>
@@ -112,7 +108,6 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: 'pink',
         alignSelf: "center"
     },
 });

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Button, Text, View, StyleSheet, TouchableOpacity } from 'react-native';
-import { NavigationProp, RouteProp } from '@react-navigation/native';
+import { View, StyleSheet } from 'react-native';
+import { NavigationProp } from '@react-navigation/native';
 
 import JustQRSvgComponent from './svg_components/justQR';
 import ScanSvgComponent from './svg_components/scan';
@@ -38,7 +38,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly', 
         alignItems: 'flex-start',
         padding: 15,
-        // paddingTop: 15,
         backgroundColor: colors.secondary,
     }
 });

@@ -1,6 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { Button, Text, View, StyleSheet, Switch } from 'react-native';
-const keys = require('../resources/constants/keys.json') as { encrypt_key: string };
+import { View, StyleSheet } from 'react-native';
 
 import { NavigationProp, RouteProp, useFocusEffect } from '@react-navigation/native';
 
@@ -11,7 +10,6 @@ import Heading from './Heading';
 import Description from './Description';
 import Line from './Line';
 import AdditionalInfos from './AdditionalInfos';
-import QRButton from './QRButton';
 import WebsiteMetadata from './DisplayWebsite';
 import InitialButtons from './InitialButtons';
 import NavBar from './NavBar';
@@ -91,10 +89,10 @@ const TitleScreen = ({ navigation, route, db }: TitleScreenProps) => {
   useFocusEffect(
     React.useCallback(() => {
       console.log({sharedValue});
-      // getData();
       return () => {};
     }, [sharedValue])
   );
+  
   useEffect(() => {
     console.log({param});
     if(param != null){      
@@ -147,29 +145,11 @@ const TitleScreen = ({ navigation, route, db }: TitleScreenProps) => {
       }
     }
   }, [description, topic, title]);
-
   
   function isUrl(string: string): boolean {
     var res = string.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
     return (res !== null)
   }
-
-  // check if any of the parts are null
-  // if(description != "" && description != null && description != undefined) {
-  //   setEmpty(false);
-  //   // check if data is structured
-  //   if(topic != "" && title != "") {
-  //     setStructuredText(true);
-  //     // check if the data is a link
-      
-  //   } else {
-  //     if(isUrl(description)) {
-  //       setJustLink(true);
-  //     } else {
-  //       setFreeText(true);
-  //     }
-  //   }
-  // }
 
   return (
     <View style={styles.title_screen_view}>
@@ -177,7 +157,6 @@ const TitleScreen = ({ navigation, route, db }: TitleScreenProps) => {
       {!empty && <TopBar title={topic} /> }
       {!empty && 
         <ScrollView style={styles.scrollWrapper}>
-            {/* <WebsiteMetadata url="https://en.wikipedia.org/wiki/Chemokine" /> */}
             {structuredText && (
               <>
                 <Heading main={title} sub={subtitle ? subtitle : ""} />
@@ -225,9 +204,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
   },
   scrollWrapper: {
-    // width: '100%',
     flex: 1,
-    // backgroundColor: "pink",
     paddingRight: 10,
     paddingLeft: 10,
   },

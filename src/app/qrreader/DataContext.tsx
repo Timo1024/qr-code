@@ -3,7 +3,6 @@ import MyContext from './MyContext';
 
 const DataProvider = ({ children } : { children: React.ReactNode }) => {
   const [sharedValue, setSharedValue] = useState(false);
-  // const [data, setData] = useState<string | null>(null);
   const [topic, setTopic] = useState<string>("");
   const [title, setTitle] = useState<string>("");
   const [subtitle, setSubtitle] = useState<string>("");

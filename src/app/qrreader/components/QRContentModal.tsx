@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Modal, Text, TextInput, View, Button, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Alert } from 'react-native';
+import { Modal, Text, TextInput, View, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Alert } from 'react-native';
 import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
-import { addEntry, getExistingTags, updateDB } from '../services/database';
+import { getExistingTags, updateDB } from '../services/database';
 import Share from 'react-native-share';
 import { deleteEntry } from '../services/database';
 
@@ -13,7 +13,6 @@ import ShareSvgComponent from './svg_components/share';
 import PenSvgComponent from './svg_components/pen';
 import TrashSvgComponent from './svg_components/trash';
 import CancelSvgComponent from './svg_components/cancel';
-import BackarrowSvgComponent from './svg_components/backarrow';
 import CheckSvgComponent from './svg_components/check';
 import RNFetchBlob from 'rn-fetch-blob';
 import ViewShot from 'react-native-view-shot';
@@ -360,10 +359,8 @@ const MyModal = ({ data, isVisible, onClose, db }: { data: any, isVisible: boole
                                 <TextInput
                                     style={styles.tagsInput}
                                     onChangeText={handleInputChange}
-                                    // onKeyPress={handleKeyPress}
                                     value={input}
                                     placeholder={"Add tag by pressing space"}
-                                    // placeholder={tags.length === 0 ? "Add tag by pressing spacebar" : ""}
                                     placeholderTextColor="#888"
                                 />
                                 {tags.map((tag, index) => (
@@ -377,7 +374,6 @@ const MyModal = ({ data, isVisible, onClose, db }: { data: any, isVisible: boole
                                 ))}
                             </View>
 
-                            {/* extend with empty space */}
                             <View style={styles.emptySpace} />
 
                         </ScrollView>
@@ -399,8 +395,6 @@ const MyModal = ({ data, isVisible, onClose, db }: { data: any, isVisible: boole
 
                         <View style={styles.card}>
                             <ScrollView contentContainerStyle={styles.ListWrapper}>
-
-                                {/* add an image of the qr-code (data.reference if data.topic && data.title are not null; data.description otherwise)*/}
                                 <View style={styles.showQR}>
                                     <QRCode
                                         value={QRtext ?? 'no text provided'}
@@ -410,7 +404,6 @@ const MyModal = ({ data, isVisible, onClose, db }: { data: any, isVisible: boole
                                     />
                                 </View>
 
-                                {/* display all the information of the qr code if it exists */}
                                 {data.topic && data.topic.trim() !== '' &&
                                     <View style={styles.listTopic}>
                                         <Text style={styles.listTopicText}>{data.topic}</Text>
@@ -440,12 +433,10 @@ const MyModal = ({ data, isVisible, onClose, db }: { data: any, isVisible: boole
                                     ))}
                                 </View>
 
-                                {/* extend with empty space */}
                                 <View style={styles.emptySpace2} />
                             </ScrollView>
                         </View>
 
-                        {/* add a delete, edit, share, download, cancel button */}
                         <View style={styles.exitButtonsWrapper}>
 
                             <View style={styles.donwloadButtonWrapper}>
@@ -498,11 +489,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     modalView: {
-        // margin: 20,
         backgroundColor: colors.primary,
         borderRadius: 5,
         paddingTop: 35,
-        // alignItems: "center",
         shadowColor: colors.secondary,
         shadowOffset: {
         width: 0,
@@ -512,9 +501,7 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 5,
         width: '100%',
-        // width: '90%',
         height: 1 * height,
-        // top: 0 * height,
         position: 'absolute',
     },
     modalTitle: {
@@ -526,17 +513,8 @@ const styles = StyleSheet.create({
     },
 
     // styles for initial modal
-
     card: {
         flex: 1,
-        // display: 'flex',
-        // flexDirection: 'column',
-        // justifyContent: 'flex-start',
-        // alignItems: 'center',
-        // backgroundColor: "lightblue",
-        // width: '100%',
-        // height: '100%',
-        // padding: 20,
         borderRadius: 5,
         borderWidth: 1,
         borderColor: colors.text,
@@ -544,22 +522,16 @@ const styles = StyleSheet.create({
         marginRight: 20,
     },
     ListWrapper: {
-        // flex: 1,
         margin: 20,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        // backgroundColor: "pink",
-        // width: '100%',
-        // marginBottom: 20,
     },
     showQR: {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: "pink",
-        // margin: 20,
         marginBottom: 20,
         marginTop: 20,
     },
@@ -567,7 +539,6 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: "pink",
         width: '100%',
         marginBottom: 10,
     },
@@ -576,7 +547,6 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: "pink",
         width: '100%',
         marginBottom: 20,
     },
@@ -584,7 +554,6 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: "pink",
         width: '100%',
         marginBottom: 20,
     },
@@ -592,7 +561,6 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: "pink",
         width: '100%',
         marginBottom: 20,
     },
@@ -600,7 +568,6 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: "pink",
         width: '100%',
         marginBottom: 20,
     },
@@ -609,7 +576,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: "pink",
         width: '100%',
         marginBottom: 20,
         flexWrap: 'wrap',
@@ -655,18 +621,11 @@ const styles = StyleSheet.create({
         fontWeight: '300',
     },
 
-
-
-
     exitButtonsWrapper: {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: "lightblue",
-        // width: '100%',
-        // height: '100%',
-        // marginBottom: 20,
         marginTop: 20,
         marginLeft: 20,
         marginRight: 20,
@@ -677,7 +636,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         width: '100%',
-        // backgroundColor: "pink",
         marginBottom: 20,
     },
     editButtonWrapper: {
@@ -686,7 +644,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         width: '100%',
-        // backgroundColor: "lightblue",
         marginBottom: 20,
     },
     closeButtonWrapper: {
@@ -695,11 +652,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         width: '100%',
-        // backgroundColor: "lightblue",
         marginBottom: 20,
     },
     buttonPrimarySvg: {
-        // flex: 1,
         backgroundColor: colors.accent,
         padding: 10,
         borderRadius: 5,
@@ -718,14 +673,12 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         borderWidth: 1,
         borderColor: colors.accent,
-        // width: '40%',
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
     },
     buttonSecondarySvg: {
-        // backgroundColor: colors.secondary,
         padding: 9,
         borderRadius: 5,
         borderWidth: 1,
@@ -749,22 +702,17 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
     emptySpace: {
-        height: 100, // Adjust the height as needed
+        height: 100,
         width: '100%',
-        // backgroundColor: "pink",
     },
     emptySpace2: {
-        height: 50, // Adjust the height as needed
+        height: 50,
         width: '100%',
-        // backgroundColor: "pink",
     },
 
-
     // styles for edit modal
-
     textInput: {
         flex: 1,
-        // height: 40,
         borderColor: colors.text,
         borderWidth: 1,
         color: colors.text,
@@ -783,10 +731,7 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         flex: 1,
-        // justifyContent: 'flex-start',
         marginBottom: 20,
-        // backgroundColor: "pink",
-        // backgroundColor: colors.primary,
         width: '100%',
     },
     topicInputContainer: {
@@ -805,14 +750,11 @@ const styles = StyleSheet.create({
         minHeight: 0.15 * height,
     },    
     wrapper: {
-        // display: 'flex',
-        // flex: 1,
         justifyContent: 'center',
         alignItems: 'flex-start',
         width: '100%',
         padding: 20,
         paddingTop: 0,
-        // backgroundColor: "pink",
     },
     exitButtons: {
         display: 'flex',
@@ -820,7 +762,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
         alignItems: 'center',
         padding: 20,
-        // backgroundColor: "lightblue",
     },
     buttonPrimary: {
         backgroundColor: colors.accent,
@@ -829,7 +770,6 @@ const styles = StyleSheet.create({
         width: '40%',
     },
     buttonSecondary: {
-        // backgroundColor: colors.secondary,
         padding: 10,
         borderRadius: 5,
         borderWidth: 1,

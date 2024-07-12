@@ -1,7 +1,6 @@
 import React from 'react';
-import { Button, Text, View, StyleSheet, TouchableOpacity } from 'react-native';
-import { NavigationProp, RouteProp } from '@react-navigation/native';
-import QRSvgComponent from './svg_components/qr';
+import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { NavigationProp } from '@react-navigation/native';
 
 import { colors } from '../resources/constants/colors.json';
 
@@ -75,6 +74,5 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: "pink",
     }
 });

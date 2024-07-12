@@ -1,7 +1,5 @@
 import React from 'react';
-import { Button, Text, View, StyleSheet, Linking, TouchableOpacity  } from 'react-native';
-
-import { NavigationProp, RouteProp } from '@react-navigation/native';
+import { Text, View, StyleSheet, Linking, TouchableOpacity  } from 'react-native';
 
 import { colors } from '../resources/constants/colors.json';
 
@@ -18,37 +16,26 @@ const AdditionalInfos = ({ text }: any) => {
         {
           isUrl(text) ? 
           <TouchableOpacity onPress={handlePress}>
-            <LinkSvgComponent />
+            <LinkSvgComponent width={32} height={32} color={colors.text} />
           </TouchableOpacity>
           :
           <Text style={styles.additional_infos_text}>{ text }</Text>
         }
       </View>
     );
-
-    // if(isUrl(text)){
-    // }
-
-    // return (
-    //   <View style={styles.additional_infos_view}>
-    //     <Text style={styles.additional_infos_text}>{ text }</Text>
-    //   </View>
-    // );
 };
 
 export default AdditionalInfos;
 
 const styles = StyleSheet.create({
     additional_infos_view : {
-        // width: '100%',
         justifyContent: 'center', 
         alignItems: 'center',
-        // backgroundColor: "pink",
         paddingTop: 20,
         paddingBottom: 20,
     },
     additional_infos_text : {
-        color: '#FFFFFF',
+        color: colors.text,
         fontSize: 14,
         fontWeight: "300",
     }

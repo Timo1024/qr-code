@@ -50,24 +50,6 @@ const DBDebugScreen: React.FC<DBDebugScreenProps> = ({ navigation, route, db, se
     const [search, setSearch] = useState<string>("");
 
     const [anyModalVisible, setAnyModalVisible] = useState(false);
-    
-    // useEffect(() => {        
-    //     const setupDatabase = async () => {
-    //         try {
-    //             const database = await initializeDatabase();
-    //             console.log({database});
-                
-    //             if(database){
-    //                 setDb(database);
-    //                 loadEntries(database);
-    //             }
-    //         } catch (error) {
-    //             console.error('Failed to initialize database:', error);
-    //         }
-    //     };
-        
-    //     setupDatabase();
-    // }, []);
 
     useEffect(() => {
         handleSearch();
@@ -80,11 +62,9 @@ const DBDebugScreen: React.FC<DBDebugScreenProps> = ({ navigation, route, db, se
         useCallback(() => {
             console.log("It was navigated to DBDebugScreen");
             loadEntries(db);
-            // Optional cleanup function
             return () => {
-                // Cleanup code if needed
             };
-        }, [db]) // Dependencies for useCallback
+        }, [db])
     );
     
     const loadEntries = async (database: SQLiteDatabase) => {
@@ -93,37 +73,6 @@ const DBDebugScreen: React.FC<DBDebugScreenProps> = ({ navigation, route, db, se
             setCodes(entries);
         } catch (error) {
             console.error('Failed to load entries:', error);
-        }
-    };
-    
-    const handleAddEntry = async () => {
-        // make random strings
-        var   reference : string | null = Math.random().toString(36).substring(7);
-        const topic : string | null = generateLoremIpsum(1);
-        const title : string | null = generateLoremIpsum(2);
-        var   subtitle : string | null = generateLoremIpsum(6);
-        const additional : string | null = generateLoremIpsum(10);
-
-        // make random string of length 100
-        const description = generateLoremIpsum(10);
-        const tags = generateSemicolonDelimitedTextString(4);
-
-        // 50% of the time, there should be no reference
-        if(Math.random() > 0.5) {
-            reference = null;
-        }
-        if(Math.random() > 0.5) {
-            subtitle = null;
-        }
-
-        console.log({db});
-        if (db) {
-            try {
-                await addEntry(db, reference, topic, title, subtitle, description, additional, tags);
-                loadEntries(db);
-            } catch (error) {
-                console.error('Failed to add random entry:', error);
-            }
         }
     };
     
@@ -143,10 +92,6 @@ const DBDebugScreen: React.FC<DBDebugScreenProps> = ({ navigation, route, db, se
     }
 
     const handleSearch  = async () => {
-        // TODO implement search
-        console.log({search});
-        console.log({option});
-
         if(db) {
             try {
                 const entries : Codes[] = await getFilteredEntries(db, search, option);
@@ -155,12 +100,10 @@ const DBDebugScreen: React.FC<DBDebugScreenProps> = ({ navigation, route, db, se
                 console.error('Failed to load entries:', error);
             }
         }
-        
     };    
     
     return (
-        // <TouchableWithoutFeedback onPress={() => setIsOpen(false)}>
-            <View style={styles.container}>
+        <View style={styles.container}>
             <TopBar title="My QR-Codes" />
             <View style={styles.content}>
                 <View style={styles.search}>
@@ -176,13 +119,10 @@ const DBDebugScreen: React.FC<DBDebugScreenProps> = ({ navigation, route, db, se
                     )}
                 />
                 </View>
-                {/* <Button title="Add Random Entry" onPress={handleAddEntry} /> */}
-                <Button title="Remove All Entries" onPress={handleRemoveAllEntries} />
+                {/* <Button title="Remove All Entries" onPress={handleRemoveAllEntries} /> */}
             </View>
             <NavBar navigation={navigation} active={[false, false, false, true]}/>
-            </View>
-        // </TouchableWithoutFeedback>}
-        // </TouchableWithoutFeedback>
+        </View>
     );
 };
 
@@ -193,17 +133,14 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'column',
         flex: 1,
-        // padding: 16,
     },
     content: {
         flex: 1,
         width: '100%',
-        // backgroundColor: "pink",
     },
     list: {
         flex: 1,
         width: '100%',
-        // backgroundColor: "lightblue",
     },
     item: {
         padding: 8,
@@ -229,44 +166,3 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
 });
-
-// TODO remove when not used anymore
-function generateRandomString(length: number): string {
-    let result = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const charactersLength = characters.length;
-    for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-}
-function generateSemicolonDelimitedTextString(length: number): string {
-    // get random number from 0 to number
-    const randint = Math.floor(Math.random() * length);
-    var result = '';
-    for (let i = 0; i < randint; i++) {
-        result += generateLoremIpsum(1) + ';';
-    }
-    result += generateLoremIpsum(1);
-    return result;
-}
-const loremWords = [
-    "lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit",
-    "sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore",
-    "magna", "aliqua", "ut", "enim", "ad", "minim", "veniam", "quis", "nostrud",
-    "exercitation", "ullamco", "laboris", "nisi", "ut", "aliquip", "ex", "ea",
-    "commodo", "consequat", "duis", "aute", "irure", "dolor", "in", "reprehenderit",
-    "in", "voluptate", "velit", "esse", "cillum", "dolore", "eu", "fugiat", "nulla",
-    "pariatur", "excepteur", "sint", "occaecat", "cupidatat", "non", "proident",
-    "sunt", "in", "culpa", "qui", "officia", "deserunt", "mollit", "anim", "id", "est",
-    "laborum"
-  ];
-  
-  const generateLoremIpsum = (wordCount: number): string => {
-    let loremText = "";
-    for (let i = 0; i < wordCount; i++) {
-      const randomIndex = Math.floor(Math.random() * loremWords.length);
-      loremText += loremWords[randomIndex] + " ";
-    }
-    return loremText.trim();
-  };

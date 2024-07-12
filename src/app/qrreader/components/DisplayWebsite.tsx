@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Linking } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 
 import { colors } from '../resources/constants/colors.json';
-import LinkSvgComponent from './svg_components/link';
-import CopyableText from './CopyableText';
 
 function isUrl(string: string): boolean {
   var res = string.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
@@ -14,13 +12,9 @@ const WebsiteMetadata = ({ url }: { url: string }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
-  console.log({url});
-  
-
   useEffect(() => {
     setTitle("");
     setDescription("");
-
     
     const fetchMetadata = async () => {
       try {
@@ -92,7 +86,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
-        // backgroundColor: "green",
         width: '100%',
     },
     title: {

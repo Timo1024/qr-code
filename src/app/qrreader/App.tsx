@@ -7,32 +7,18 @@
 
 import React, { useEffect, useState } from 'react';
 
-import type {PropsWithChildren} from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
-  useColorScheme,
-  View,
   Easing
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
+import { SQLiteDatabase } from 'react-native-sqlite-storage';
 
-import { initializeDatabase, closeDatabase, getAllEntries } from './services/database';
+import { initializeDatabase } from './services/database';
 
-import CameraComponent from './components/CameraComponent';
-import { NavigationContainer, NavigationProp, RouteProp } from '@react-navigation/native';
-import { CardStyleInterpolators, createStackNavigator, TransitionPresets } from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import TitleScreen from './components/TitleScreen';
 import ScannerScreen from './components/ScannerScreen';
 import DBDebugScreen from './components/DBListScreen';
@@ -42,22 +28,6 @@ import CreateScreen from './components/CreateScreen';
 import { colors } from './resources/constants/colors.json';
 
 import DataProvider from './DataContext';
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-interface Codes {
-  id: number;
-  reference: string;
-  date: string;
-  topic: string;
-  title: string;
-  subtitle: string;
-  description: string;
-  additional: string;
-  tags: string;
-}
 
 const Stack = createStackNavigator();
 
@@ -78,7 +48,6 @@ function App(): React.JSX.Element {
             
             if(database){
                 setDb(database);
-                // loadEntries(database);
             }
         } catch (error) {
             console.error('Failed to initialize database:', error);
@@ -106,7 +75,7 @@ function App(): React.JSX.Element {
           initialRouteName="Title"
           screenOptions={{
             gestureEnabled: false,
-            ...TransitionPresets.ScaleFromCenterAndroid, // This is one of the predefined animations
+            ...TransitionPresets.ScaleFromCenterAndroid,
             transitionSpec: {
               open: {
                 animation: 'timing',
