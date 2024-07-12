@@ -175,6 +175,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
         backgroundColor: colors.secondary,
         padding: 15,
+        paddingTop: 0,
         paddingBottom: 20,
         margin: 5,
         borderRadius: 5,
@@ -198,17 +199,24 @@ const styles = StyleSheet.create({
         fontWeight: '300',
         marginTop: 5
     },
+    scrollTags : {
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'row',
+        flex: 1,
+    },
     tagWrapper : {
         // should be just one row, but scrollable left right
         display: 'flex',
         flexDirection: 'row',
-        paddingTop: 5,
-        paddingBottom: 5,
+        paddingTop: 20,
+        paddingBottom: 10,
         // flexWrap: 'wrap',
         // justifyContent: 'flex-start',
         // alignItems: 'center',
         // margin: 5
         // marginRight: 20,
+        // backgroundColor: "pink"
     },
     tags : {
         fontSize: 10,
@@ -228,12 +236,6 @@ const styles = StyleSheet.create({
         alignItems: 'stretch', // Possible values: 'flex-start', 'flex-end', 'center', 'stretch', 'baseline'
         justifyContent: 'space-evenly',
         paddingTop: 5,
-    },
-    scrollTags : {
-        position: 'relative',
-        display: 'flex',
-        flexDirection: 'row',
-        flex: 1,
     },
     fadeStart: {
         position: 'absolute',

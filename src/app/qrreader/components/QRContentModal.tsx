@@ -377,7 +377,8 @@ const MyModal = ({ data, isVisible, onClose, db }: { data: any, isVisible: boole
                                 ))}
                             </View>
 
-
+                            {/* extend with empty space */}
+                            <View style={styles.emptySpace} />
 
                         </ScrollView>
                         <View style={styles.exitButtons}>
@@ -433,11 +434,14 @@ const MyModal = ({ data, isVisible, onClose, db }: { data: any, isVisible: boole
                                 }
                                 <View style={styles.listTagsWrapper}>
                                     {data.tags.split(';').map((tag: string, index: number) => (
-                                        <TouchableOpacity key={index} style={styles.listTags}>
+                                        <View key={index} style={styles.listTags}>
                                             <Text style={styles.ListTagText}>{tag}</Text>
-                                        </TouchableOpacity>
+                                        </View>
                                     ))}
                                 </View>
+
+                                {/* extend with empty space */}
+                                <View style={styles.emptySpace2} />
                             </ScrollView>
                         </View>
 
@@ -445,21 +449,21 @@ const MyModal = ({ data, isVisible, onClose, db }: { data: any, isVisible: boole
                         <View style={styles.exitButtonsWrapper}>
 
                             <View style={styles.donwloadButtonWrapper}>
-                                <TouchableOpacity onPress={() => setDownload(true)} style={styles.buttonPrimarySvg}>
+                                <TouchableOpacity onPress={() => setDownload(true)} style={{...styles.buttonPrimarySvgStart, marginRight: 20}}>
                                     <DownloadSvgComponent color={colors.secondary} height={20} width={20}/>
                                     <Text style={styles.textPrimarySvg}>Download</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => setShare(true)} style={styles.buttonPrimarySvg}>
+                                <TouchableOpacity onPress={() => setShare(true)} style={styles.buttonPrimarySvgStart}>
                                     <ShareSvgComponent color={colors.secondary} height={20} width={20}/>
                                     <Text style={styles.textPrimarySvg}>Share</Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={styles.editButtonWrapper}>
-                                <TouchableOpacity onPress={() => setEdit(true)} style={styles.buttonPrimarySvg}>
+                                <TouchableOpacity onPress={() => setEdit(true)} style={{...styles.buttonPrimarySvgStart, marginRight: 20}}>
                                     <PenSvgComponent color={colors.secondary} height={20} width={20}/>
-                                    <Text style={styles.textPrimarySvg}>View & Edit</Text>
+                                    <Text style={styles.textPrimarySvg}>Edit</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={onDelete} style={styles.buttonPrimarySvg}>
+                                <TouchableOpacity onPress={onDelete} style={styles.buttonPrimarySvgStart}>
                                     <TrashSvgComponent color={colors.secondary} height={20} width={20}/>
                                     <Text style={styles.textPrimarySvg}>Delete</Text>
                                 </TouchableOpacity>
@@ -507,9 +511,10 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 5,
-        width: '90%',
-        height: 0.95 * height,
-        top: 0.025 * height,
+        width: '100%',
+        // width: '90%',
+        height: 1 * height,
+        // top: 0 * height,
         position: 'absolute',
     },
     modalTitle: {
@@ -522,30 +527,32 @@ const styles = StyleSheet.create({
 
     // styles for initial modal
 
-    ListWrapper: {
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        // backgroundColor: "pink",
-        width: '100%',
-        // marginBottom: 20,
-    },
     card: {
         flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        // display: 'flex',
+        // flexDirection: 'column',
+        // justifyContent: 'flex-start',
+        // alignItems: 'center',
         // backgroundColor: "lightblue",
         // width: '100%',
         // height: '100%',
-        padding: 20,
+        // padding: 20,
         borderRadius: 5,
         borderWidth: 1,
         borderColor: colors.text,
         marginLeft: 20,
         marginRight: 20,
+    },
+    ListWrapper: {
+        // flex: 1,
+        margin: 20,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        // backgroundColor: "pink",
+        // width: '100%',
+        // marginBottom: 20,
     },
     showQR: {
         display: 'flex',
@@ -554,6 +561,7 @@ const styles = StyleSheet.create({
         // backgroundColor: "pink",
         // margin: 20,
         marginBottom: 20,
+        marginTop: 20,
     },
     listTopic: {
         display: 'flex',
@@ -610,10 +618,12 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: colors.accent,
+        backgroundColor: colors.text,
         padding: 5,
-        margin: 5,
+        margin: 3,
         borderRadius: 5,
+        paddingTop: 2,
+        paddingBottom: 2,
     },
     ListTagText: {
         color: colors.secondary,
@@ -654,15 +664,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         // backgroundColor: "lightblue",
-        width: '100%',
+        // width: '100%',
         // height: '100%',
         // marginBottom: 20,
         marginTop: 20,
+        marginLeft: 20,
+        marginRight: 20,
     },
     donwloadButtonWrapper: {
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'space-evenly',
+        justifyContent: 'space-between',
         alignItems: 'center',
         width: '100%',
         // backgroundColor: "pink",
@@ -671,7 +683,7 @@ const styles = StyleSheet.create({
     editButtonWrapper: {
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'space-evenly',
+        justifyContent: 'space-between',
         alignItems: 'center',
         width: '100%',
         // backgroundColor: "lightblue",
@@ -687,10 +699,26 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     buttonPrimarySvg: {
+        // flex: 1,
         backgroundColor: colors.accent,
         padding: 10,
         borderRadius: 5,
+        borderWidth: 1,
+        borderColor: colors.accent,
         width: '40%',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    buttonPrimarySvgStart: {
+        flex: 1,
+        backgroundColor: colors.accent,
+        padding: 10,
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: colors.accent,
+        // width: '40%',
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
@@ -698,7 +726,7 @@ const styles = StyleSheet.create({
     },
     buttonSecondarySvg: {
         // backgroundColor: colors.secondary,
-        padding: 10,
+        padding: 9,
         borderRadius: 5,
         borderWidth: 1,
         borderColor: colors.accent,
@@ -719,6 +747,16 @@ const styles = StyleSheet.create({
         fontWeight: '400',
         textAlign: 'center',
         marginLeft: 10,
+    },
+    emptySpace: {
+        height: 100, // Adjust the height as needed
+        width: '100%',
+        // backgroundColor: "pink",
+    },
+    emptySpace2: {
+        height: 50, // Adjust the height as needed
+        width: '100%',
+        // backgroundColor: "pink",
     },
 
 

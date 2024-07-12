@@ -126,7 +126,7 @@ function App(): React.JSX.Element {
       <Stack.Navigator 
         initialRouteName="Title"
         screenOptions={{
-          gestureEnabled: true,
+          gestureEnabled: false,
           ...TransitionPresets.ScaleFromCenterAndroid, // This is one of the predefined animations
           transitionSpec: {
             open: {
@@ -147,10 +147,38 @@ function App(): React.JSX.Element {
           // cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS, // This is for the card style
         }}
       >
-        <Stack.Screen name="Title" component={TitleScreen} options={{headerShown: false}} />
-        <Stack.Screen name="Scanner" component={ScannerScreen} options={{headerShown: false}} />
-        <Stack.Screen name="Create" component={withDatabase(CreateScreen)} options={{headerShown: false}} />
-        <Stack.Screen name="DBList" component={withDatabase(DBDebugScreen)} options={{headerShown: false}} />
+        <Stack.Screen 
+          name="Title" 
+          component={TitleScreen} 
+          options={{
+            gestureEnabled: false,
+            headerShown: false
+          }}
+        />
+        <Stack.Screen 
+          name="Scanner" 
+          component={ScannerScreen} 
+          options={{
+            gestureEnabled: false,
+            headerShown: false
+          }} 
+        />
+        <Stack.Screen 
+          name="Create" 
+          component={withDatabase(CreateScreen)} 
+          options={{
+            gestureEnabled: false,
+            headerShown: false
+          }} 
+        />
+        <Stack.Screen 
+          name="DBList" 
+          component={withDatabase(DBDebugScreen)} 
+          options={{
+            gestureEnabled: false,
+            headerShown: false
+          }} 
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
