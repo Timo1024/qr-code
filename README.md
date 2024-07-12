@@ -13,3 +13,6 @@ In the `app/qrreader/android` folder run `./gradlew clean` if something doesnt w
 - run `cp myDatabase.db /sdcard/Download/`
 - In a terminal run `cd D:/programming/qr-code/backup_db/`
 - In a terminal run `adb pull /sdcard/Download/myDatabase.db`
+
+# Publish guide
+[React Native Guide](https://reactnative.dev/docs/signed-apk-android)
