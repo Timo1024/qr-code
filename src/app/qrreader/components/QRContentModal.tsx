@@ -484,25 +484,15 @@ export default MyModal;
 
 const styles = StyleSheet.create({
     centeredView: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
+        // justifyContent: "center",
+        // alignItems: "center",
     },
     modalView: {
         backgroundColor: colors.primary,
-        borderRadius: 5,
-        paddingTop: 35,
-        shadowColor: colors.secondary,
-        shadowOffset: {
-        width: 0,
-        height: 2
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
+        paddingTop: 30,
         elevation: 5,
         width: '100%',
         height: 1 * height,
-        position: 'absolute',
     },
     modalTitle: {
         color: colors.text,
@@ -702,7 +692,7 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
     emptySpace: {
-        height: 100,
+        height: 300,
         width: '100%',
     },
     emptySpace2: {
