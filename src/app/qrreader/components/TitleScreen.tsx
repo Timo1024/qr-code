@@ -144,6 +144,10 @@ const TitleScreen = ({ navigation, route, db }: TitleScreenProps) => {
         }
       }
     }
+    console.log({empty, justLink, freeText, structuredText});
+    console.log({topic, title, subtitle, description, additional_information, tags});
+    
+    
   }, [description, topic, title]);
   
   function isUrl(string: string): boolean {
@@ -155,32 +159,34 @@ const TitleScreen = ({ navigation, route, db }: TitleScreenProps) => {
     <View style={styles.title_screen_view}>
       {empty && <TopBar title={"QR-Tools"} /> }
       {!empty && <TopBar title={topic} /> }
-      {!empty && 
-        <ScrollView style={styles.scrollWrapper}>
-            {structuredText && (
-              <>
-                <Heading main={title} sub={subtitle ? subtitle : ""} />
-                <Line/>
-                <Description text={description} />
-                <AdditionalInfos text={additional_information} />
-                <Tags tags={tags} />
-              </>
-            )}
-            {justLink && (
-              <>
-                <WebsiteMetadata url={description} />
-                <Tags tags={tags} />
-              </>
-            )}
-            {freeText && (
-              <>
-                <Description text={description} />
-                <Tags tags={tags} />
-              </>
-            )}
+      {!empty && !justLink && 
+        <View style={{flex: 1}}>
+          <ScrollView contentContainerStyle={styles.scrollWrapper}>
+              {structuredText && (
+                <>
+                  <Heading main={title} sub={subtitle ? subtitle : ""} />
+                  <Line/>
+                  <Description text={description} />
+                  <AdditionalInfos text={additional_information} />
+                  <Tags tags={tags} />
+                </>
+              )}
+              {freeText && (
+                <>
+                  <Description text={description} />
+                  <Tags tags={tags} />
+                </>
+              )}
 
-          </ScrollView>
+            </ScrollView>
+          </View>
         } 
+        {justLink && (
+                <View style={styles.justLink}>
+                  <WebsiteMetadata url={description} />
+                  <Tags tags={tags} />
+                </View>
+        )}
         {!empty && <CopyableText textToCopy={description}/>}
         {empty && (
           <>
@@ -195,18 +201,20 @@ const TitleScreen = ({ navigation, route, db }: TitleScreenProps) => {
 
 const styles = StyleSheet.create({
   title_screen_view : {
-    flex: 1,
+    height: '100%',
     width: '100%',
-    justifyContent: 'center', 
-    alignItems: 'center',
     flexDirection: 'column',
-    marginTop: 0,
-    backgroundColor: colors.primary,
   },
   scrollWrapper: {
+    paddingRight: 20,
+    paddingLeft: 20,
+    justifyContent: 'center',
+  },
+  justLink: {
     flex: 1,
-    paddingRight: 10,
-    paddingLeft: 10,
+    flexDirection: 'column',
+    justifyContent: 'center', 
+    alignItems: 'center',
   },
 });
 
