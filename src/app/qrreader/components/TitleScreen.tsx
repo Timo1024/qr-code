@@ -19,6 +19,7 @@ import MyContext from '../MyContext';
 import { getEntryByReference } from '../services/database';
 import { ScrollView } from 'react-native-gesture-handler';
 import Tags from './Tags';
+import MarkdownComponent from './Markdown';
 
 type TitleScreenProps = {
   navigation: NavigationProp<any>;
@@ -190,6 +191,7 @@ const TitleScreen = ({ navigation, route, db }: TitleScreenProps) => {
         {!empty && <CopyableText textToCopy={description}/>}
         {empty && (
           <>
+            <MarkdownComponent content="hi" />
             <InitialButtons navigation={navigation} />
           </>
         )}
